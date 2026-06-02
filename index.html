@@ -529,7 +529,7 @@
 
   <section class="tab active" style="display:block;background:white;border:1px solid var(--border);border-radius:14px;margin-top:12px;">
     <div class="content" style="font-size:.85rem;color:#475569;">
-      <strong>App Version:</strong> 1.5 | &nbsp;
+      <strong>App Version:</strong> 1.6 | &nbsp;
       <strong>Last Updated:</strong> June 2026 &nbsp; | &nbsp;
       <strong>Supported Precincts:</strong> Millcreek / Holladay only &nbsp; | &nbsp;
       <strong>Use:</strong> Generic field checklist and routing assistant. Not affiliated with or endorsed by any agency.
@@ -744,9 +744,9 @@ function updateAll(){
   document.getElementById('routingPanel').className = r.citation==='REQUIRED'||r.epros==='REQUIRED' ? 'result warn' : 'result ok';
   document.getElementById('routingPanel').innerHTML = `<strong>Court / Submission:</strong> ${r.court}<br><strong>Citation:</strong> ${r.citation}<br><strong>EProsecutor:</strong> ${r.epros}<br>${r.reminders.map(x=>'• '+x).join('<br>')}`;
 
-  const checks=allChecks(), done=checks.filter(c=>c.checked).length, pct=checks.length?Math.round(done/checks.length*100):0;
-  document.getElementById('barFill').style.width=pct+'%';
-  document.getElementById('progressText').textContent=`Checklist completion: ${pct}% (${done}/${checks.length})`;
+  const progress = calculateProgress();
+  document.getElementById('barFill').style.width = progress.percent + '%';
+  document.getElementById('progressText').textContent = `Checklist completion: ${progress.percent}% (${progress.done}/${progress.total})`;
   updateSmartSheetShortcut();
     renderReview(false);
 }
@@ -761,9 +761,6 @@ function renderReview(show=true){
 }
 
 function generateSummary(){
-}
-
-
   updateAll();
   const r=getRouting(), w=validationWarnings(), forms=requiredForms();
   const completed=allChecks().filter(c=>c.checked).map(c=>'✓ '+c.dataset.item);
@@ -844,47 +841,47 @@ function clearForm(){
   updateAll();
 }
 
-  function applyDisplayMode(mode) {
-    if (mode === 'night') {
-      document.body.classList.add('night');
-      try { localStorage.setItem('dvAssistantMode', 'night'); } catch (e) {}
-    } else {
-      document.body.classList.remove('night');
-      try { localStorage.setItem('dvAssistantMode', 'day'); } catch (e) {}
-    }
+function applyDisplayMode(mode) {
+  if (mode === 'night') {
+    document.body.classList.add('night');
+    try { localStorage.setItem('dvAssistantMode', 'night'); } catch (error) {}
+  } else {
+    document.body.classList.remove('night');
+    try { localStorage.setItem('dvAssistantMode', 'day'); } catch (error) {}
+  }
+}
+
+function initializeDisplayMode() {
+  let savedMode = 'day';
+
+  try {
+    savedMode = localStorage.getItem('dvAssistantMode') || 'day';
+  } catch (error) {
+    savedMode = 'day';
   }
 
-  function initializeDisplayMode() {
-    let savedMode = 'day';
+  applyDisplayMode(savedMode);
 
-    try {
-      savedMode = localStorage.getItem('dvAssistantMode') || 'day';
-    } catch (e) {
-      savedMode = 'day';
-    }
+  const dayButton = document.getElementById('dayModeBtn');
+  const nightButton = document.getElementById('nightModeBtn');
 
-    applyDisplayMode(savedMode);
-
-    const dayButton = document.getElementById('dayModeBtn');
-    const nightButton = document.getElementById('nightModeBtn');
-
-    if (dayButton) {
-      dayButton.addEventListener('click', function () {
-        applyDisplayMode('day');
-      });
-    }
-
-    if (nightButton) {
-      nightButton.addEventListener('click', function () {
-        applyDisplayMode('night');
-      });
-    }
+  if (dayButton) {
+    dayButton.addEventListener('click', function () {
+      applyDisplayMode('day');
+    });
   }
 
-  document.addEventListener('DOMContentLoaded', function () {
-    initializeDisplayMode();
-    updateAll();
-  });
+  if (nightButton) {
+    nightButton.addEventListener('click', function () {
+      applyDisplayMode('night');
+    });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  initializeDisplayMode();
+  updateAll();
+});
 
 </script>
 </body>
