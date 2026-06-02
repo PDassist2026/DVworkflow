@@ -51,12 +51,186 @@
     .resource-link{display:block;padding:12px;margin:8px 0;border-radius:10px;border:1px solid var(--border);background:#f8fafc;color:#1d4ed8;font-weight:bold;text-decoration:none}
     .resource-link:hover{background:#eff6ff;text-decoration:underline}
     .disabled-link{display:block;padding:12px;margin:8px 0;border-radius:10px;border:1px solid var(--border);background:#f1f5f9;color:#64748b;font-weight:bold}
+  
+    /* Phone / patrol-use optimization */
+    @media (max-width: 700px) {
+      header h1 {
+        font-size: 1.2rem;
+      }
+
+      header p {
+        font-size: .85rem;
+      }
+
+      main {
+        margin-bottom: 120px;
+        padding: 0 8px;
+      }
+
+      .tabs {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .tabbtn {
+        min-width: max-content;
+        min-height: 52px;
+        padding: 14px 16px;
+        font-size: .95rem;
+      }
+
+      label {
+        font-size: .95rem;
+      }
+
+      input,
+      select,
+      textarea {
+        min-height: 48px;
+        font-size: 1rem;
+      }
+
+      .check {
+        padding: 12px 0;
+        font-size: 1rem;
+      }
+
+      .check input {
+        transform: scale(1.25);
+        margin-right: 4px;
+      }
+
+      .actions {
+        justify-content: stretch;
+      }
+
+      .actions button {
+        flex: 1 1 45%;
+        min-height: 50px;
+        font-size: .95rem;
+      }
+
+      .content {
+        padding: 12px;
+      }
+    }
+
+    .mode-toggle {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .mode-toggle button {
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.45);
+      color: white;
+    }
+
+    body.night {
+      background: #020617;
+      color: #e2e8f0;
+    }
+
+    body.night header {
+      background: linear-gradient(90deg, #020617, #1e3a8a);
+    }
+
+    body.night .tab,
+    body.night .progress,
+    body.night .actions,
+    body.night section[style*="background:white"] {
+      background: #0f172a !important;
+      color: #e2e8f0;
+      border-color: #334155;
+    }
+
+    body.night .tabbtn {
+      background: #1e293b;
+      color: #e2e8f0;
+      border-color: #334155;
+    }
+
+    body.night .tabbtn.active {
+      background: #2563eb;
+      color: white;
+    }
+
+    body.night input,
+    body.night select,
+    body.night textarea {
+      background: #020617;
+      color: #e2e8f0;
+      border-color: #475569;
+    }
+
+    body.night .card,
+    body.night .resource-link {
+      background: #1e293b;
+      color: #93c5fd;
+      border-color: #334155;
+    }
+
+    body.night .disabled-link {
+      background: #111827;
+      color: #94a3b8;
+      border-color: #334155;
+    }
+
+    body.night .notice {
+      background: #431407;
+      color: #fed7aa;
+      border-left-color: #fb923c;
+    }
+
+    body.night .muted {
+      background: #1e293b;
+      color: #cbd5e1;
+      border-left-color: #64748b;
+    }
+
+    body.night .ok {
+      background: #052e16;
+      color: #bbf7d0;
+      border-left-color: #22c55e;
+    }
+
+    body.night .warn {
+      background: #422006;
+      color: #fde68a;
+      border-left-color: #facc15;
+    }
+
+    body.night .bad {
+      background: #450a0a;
+      color: #fecaca;
+      border-left-color: #ef4444;
+    }
+
+    body.night .progress-text {
+      color: #cbd5e1;
+    }
+
+    body.night .listline,
+    body.night .check {
+      border-bottom-color: #334155;
+    }
+
   </style>
 </head>
 <body>
 <header>
   <h1>Domestic Violence Investigation Assistant</h1>
   <p>Millcreek / Holladay field checklist and court-routing workflow — no database, no cloud storage. Email/copy only.</p>
+
+  <div class="mode-toggle">
+    <button type="button" onclick="setMode('day')">Day Mode</button>
+    <button type="button" onclick="setMode('night')">Night Mode</button>
+  </div>
 </header>
 
 <main>
@@ -297,7 +471,6 @@
       <div>
         <label class="check"><input type="checkbox" data-item="DV Smartsheet completed if applicable"><span>DV Smartsheet completed if applicable</span></label>
         <label class="check"><input type="checkbox" data-item="Holladay Justice Court referral completed if applicable"><span>Holladay Justice Court referral completed if applicable</span></label>
-        <label class="check"><input type="checkbox" data-item="Holladay Justice Court referral completed if applicable"><span>Holladay Justice Court referral completed if applicable</span></label>
         <label class="check"><input type="checkbox" data-item="EProsecutor submission completed if required"><span>EProsecutor submission completed if required</span></label>
         <label class="check"><input type="checkbox" data-item="Salt Lake District Court filing completed for Class A or Felony DV"><span>Salt Lake District Court filing completed for Class A/Felony DV</span></label>
         <label class="check"><input type="checkbox" data-item="Fact sheet or charging packet submitted if applicable"><span>Fact sheet / charging packet submitted if applicable</span></label>
@@ -319,6 +492,10 @@
 
       <a class="resource-link" target="_blank" rel="noopener noreferrer" href="https://app.smartsheet.com/b/publish?EQBCT=f39ca08be59e46cea8e53b16143be465">
         Open Holladay DV Smartsheet
+      </a>
+
+      <a class="resource-link" href="tel:8015378600">
+        YWCA LAP Phone: 801-537-8600
       </a>
     </div>
   </section>
@@ -348,7 +525,7 @@
 
   <section class="tab active" style="display:block;background:white;border:1px solid var(--border);border-radius:14px;margin-top:12px;">
     <div class="content" style="font-size:.85rem;color:#475569;">
-      <strong>App Version:</strong> 1.3 | &nbsp;
+      <strong>App Version:</strong> 1.4 | &nbsp;
       <strong>Last Updated:</strong> June 2026 &nbsp; | &nbsp;
       <strong>Supported Precincts:</strong> Millcreek / Holladay only &nbsp; | &nbsp;
       <strong>Use:</strong> Generic field checklist and routing assistant. Not affiliated with or endorsed by any agency.
@@ -580,6 +757,26 @@ function renderReview(show=true){
 }
 
 function generateSummary(){
+
+  function setMode(mode) {
+    if (mode === 'night') {
+      document.body.classList.add('night');
+      localStorage.setItem('dvAssistantMode', 'night');
+    } else {
+      document.body.classList.remove('night');
+      localStorage.setItem('dvAssistantMode', 'day');
+    }
+  }
+
+  function loadMode() {
+    const saved = localStorage.getItem('dvAssistantMode');
+    if (saved === 'night') {
+      document.body.classList.add('night');
+    }
+  }
+
+
+  loadMode();
   updateAll();
   const r=getRouting(), w=validationWarnings(), forms=requiredForms();
   const completed=allChecks().filter(c=>c.checked).map(c=>'✓ '+c.dataset.item);
