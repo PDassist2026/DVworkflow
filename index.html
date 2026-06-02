@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DV Investigation Assistant</title>
+  <style>
+    :root{
+      --blue:#2563eb;--green:#16a34a;--orange:#ea580c;--red:#dc2626;--slate:#334155;
+      --light:#f8fafc;--border:#cbd5e1;--dark:#0f172a;--yellow:#facc15;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,sans-serif;background:#e2e8f0;color:var(--dark)}
+    header{background:linear-gradient(90deg,#172554,#2563eb);color:#fff;padding:16px;text-align:center}
+    header h1{margin:0;font-size:1.35rem}
+    header p{margin:6px 0 0;font-size:.9rem;opacity:.95}
+    main{max-width:1200px;margin:16px auto 90px;padding:0 12px}
+    .notice{background:#fff7ed;border-left:6px solid var(--orange);padding:12px;border-radius:10px;margin-bottom:12px;font-size:.92rem}
+    .tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+    .tabbtn{background:#fff;color:#0f172a;border:1px solid var(--border);padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:bold}
+    .tabbtn.active{background:var(--blue);color:#fff}
+    .tab{display:none;background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 2px 8px rgba(15,23,42,.08);overflow:hidden}
+    .tab.active{display:block}
+    .tab-title{padding:12px 16px;color:#fff;font-weight:bold;font-size:1.05rem}
+    .blue{background:var(--blue)}.green{background:var(--green)}.orange{background:var(--orange)}.red{background:var(--red)}.slate{background:var(--slate)}
+    .content{padding:14px 16px}
+    .grid{display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:850px){.grid{grid-template-columns:1fr 1fr}}
+    label{display:block;font-weight:bold;font-size:.9rem;margin:8px 0 4px}
+    input,select,textarea{width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;font-size:.95rem}
+    textarea{min-height:80px;resize:vertical}
+    .check{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px dashed #e2e8f0;font-size:.95rem;font-weight:normal}
+    .check input{width:auto;margin-top:2px}
+    .card{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:12px;margin:10px 0}
+    .result{padding:12px;border-radius:10px;margin:10px 0;font-weight:bold}
+    .ok{background:#dcfce7;border-left:6px solid var(--green);color:#14532d}
+    .bad{background:#fee2e2;border-left:6px solid var(--red);color:#7f1d1d}
+    .warn{background:#fef3c7;border-left:6px solid var(--yellow);color:#713f12}
+    .muted{background:#f1f5f9;border-left:6px solid #64748b;color:#334155}
+    .hidden{display:none}
+    .progress{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px}
+    .bar{height:16px;background:#e2e8f0;border-radius:999px;overflow:hidden}
+    .bar-fill{height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#16a34a);transition:.2s}
+    .progress-text{font-size:.9rem;margin-top:6px;color:#334155}
+    .actions{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:10px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;box-shadow:0 -2px 10px rgba(15,23,42,.12)}
+    button{border:0;border-radius:8px;padding:10px 13px;color:#fff;font-weight:bold;cursor:pointer}
+    .btn-blue{background:var(--blue)}.btn-green{background:var(--green)}.btn-red{background:var(--red)}.btn-gray{background:var(--slate)}
+    .output{background:#020617;color:#e2e8f0;white-space:pre-wrap;padding:14px;border-radius:10px;font-family:Consolas,monospace;font-size:.84rem;margin-top:12px;display:none}
+    .pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#e2e8f0;font-size:.82rem;margin:2px}
+    .listline{padding:4px 0;border-bottom:1px dashed #e2e8f0}
+  </style>
+</head>
+<body>
+<header>
+  <h1>Domestic Violence Investigation Assistant</h1>
+  <p>Generic field checklist and court-routing workflow — no database, no cloud storage. Email/copy only.</p>
+</header>
+
+<main>
+  <div class="notice">
+    <strong>Use note:</strong> This is a process aid, not a reporting system. Avoid entering full statements, protected addresses, DOBs, SSNs, or sensitive victim details. Verify current law, policy, court procedures, and supervisor guidance before relying on any routing rule.
+  </div>
+
+  <div class="progress">
+    <div class="bar"><div id="barFill" class="bar-fill"></div></div>
+    <div id="progressText" class="progress-text">Checklist completion: 0%</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tabbtn active" onclick="showTab('qual')">1. DV Qualification</button>
+    <button class="tabbtn" onclick="showTab('invest')">2. Investigation</button>
+    <button class="tabbtn" onclick="showTab('lap')">3. LAP / Strangulation</button>
+    <button class="tabbtn" onclick="showTab('court')">4. Enforcement / Court</button>
+    <button class="tabbtn" onclick="showTab('review')">5. Final Review</button>
+  </div>
+
+  <section id="qual" class="tab active">
+    <div class="tab-title blue">DV Qualification Wizard</div>
+    <div class="content grid">
+      <div>
+        <label>Case Number</label>
+        <input id="caseNumber" placeholder="CO26-XXXXX" oninput="updateAll()">
+        <label>Officer / User</label>
+        <input id="officer" placeholder="Name / Unit" oninput="updateAll()">
+        <label>User Email</label>
+        <input id="email" placeholder="name@example.com">
+        <label>Precinct</label>
+        <select id="precinct" onchange="updateAll()">
+          <option value="">Select</option>
+          <option>Jurisdiction A</option><option>Jurisdiction B</option><option>Jurisdiction C</option>
+          <option>Jurisdiction D</option><option>Jurisdiction E</option><option>Jurisdiction F</option>
+          <option>Jurisdiction G</option><option>Jurisdiction H</option><option>Jurisdiction I</option><option>Other</option>
+        </select>
+      </div>
+      <div>
+        <label>Did a qualifying crime occur?</label>
+        <select id="qualCrime" onchange="updateAll()">
+          <option value="">Select</option>
+          <option>Assault</option>
+          <option>Criminal Mischief / Property Damage</option>
+          <option>Threats / Threat of Violence</option>
+          <option>Unlawful Detention</option>
+          <option>Protective Order / No Contact Violation</option>
+          <option>Sexual Offense</option>
+          <option>Other Qualifying Crime</option>
+          <option>No Crime / Civil Only</option>
+        </select>
+
+        <label>Qualifying relationship</label>
+        <select id="relationship" onchange="updateAll()">
+          <option value="">Select</option>
+          <option>Current spouse</option>
+          <option>Former spouse</option>
+          <option>Living as spouse</option>
+          <option>Related by blood</option>
+          <option>Related by marriage</option>
+          <option>Child in common</option>
+          <option>Biological parent of unborn child</option>
+          <option>Current cohabitant</option>
+          <option>Former cohabitant</option>
+          <option>Consensual sexual relationship</option>
+          <option>None of the above</option>
+          <option>Unsure / Confirm</option>
+        </select>
+
+        <label>Probable Cause?</label>
+        <select id="pc" onchange="updateAll()">
+          <option value="">Select</option>
+          <option>Yes</option><option>No</option><option>Still Investigating</option>
+        </select>
+
+        <div id="dvResult" class="result muted">Select crime, relationship, and PC to determine whether DV process applies.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="invest" class="tab">
+    <div class="tab-title green">Investigation Checklist</div>
+    <div class="content grid">
+      <div>
+        <div class="card">
+          <label class="check"><input type="checkbox" data-item="Parties separated"><span>Parties separated</span></label>
+          <label class="check"><input type="checkbox" data-item="Scene secured and injuries checked"><span>Scene secured and injuries checked</span></label>
+          <label class="check"><input type="checkbox" data-item="Predominant aggressor identified"><span>Predominant aggressor identified</span></label>
+          <label class="check"><input type="checkbox" data-item="Cohabitant relationship clearly documented"><span>Cohabitant relationship clearly documented in narrative</span></label>
+          <label class="check"><input type="checkbox" data-item="Intimate partner status clearly documented"><span>Intimate partner status clearly documented in narrative</span></label>
+        </div>
+
+        <label>Children Present?</label>
+        <select id="childrenPresent" onchange="updateAll()">
+          <option value="">Select</option><option>Yes</option><option>No</option>
+        </select>
+        <div id="childrenWarn" class="result warn hidden">Children present: ensure children are documented/listed properly when applicable.</div>
+
+        <label>Victim Pregnant?</label>
+        <select id="pregnant" onchange="updateAll()">
+          <option value="">Select</option><option>Yes</option><option>No</option><option>Unknown</option>
+        </select>
+
+        <label>Protective / No Contact / Stalking Order?</label>
+        <select id="orderStatus" onchange="updateAll()">
+          <option value="">Select</option><option>Served order</option><option>Unserved order</option><option>None known</option>
+        </select>
+        <div id="orderWarn" class="result warn hidden">Unserved order: consider service if suspect is still on scene.</div>
+      </div>
+
+      <div>
+        <label>Injury Claimed or Observed?</label>
+        <select id="injury" onchange="updateAll()">
+          <option value="">Select</option><option>Yes</option><option>No</option>
+        </select>
+
+        <div id="photoReq" class="card hidden">
+          <strong>Photo Reminder</strong>
+          <label class="check"><input type="checkbox" data-item="Injury photos taken"><span>Injury photos taken</span></label>
+          <label class="check"><input type="checkbox" data-item="Overall body/person photos taken"><span>Overall body/person photos taken</span></label>
+          <label class="check"><input type="checkbox" data-item="Area of claimed injury photographed even if no visible injury"><span>Claimed injury area photographed even if no visible injury</span></label>
+        </div>
+
+        <label>Property Damage?</label>
+        <select id="propertyDamage" onchange="updateAll()">
+          <option value="">Select</option><option>Yes</option><option>No</option>
+        </select>
+
+        <div id="propertyReq" class="card hidden">
+          <label class="check"><input type="checkbox" data-item="Property damage photographed"><span>Property damage photographed</span></label>
+        </div>
+
+        <label>Victim Statement</label>
+        <select id="victimStatement" onchange="updateAll()">
+          <option value="">Select</option><option>Obtained / Signed</option><option>Refused</option><option>Unable</option><option>Not Applicable</option>
+        </select>
+
+        <label>Witness Statements</label>
+        <select id="witnessStatement" onchange="updateAll()">
+          <option value="">Select</option><option>Obtained / Signed</option><option>Refused</option><option>Unable / No Witnesses</option>
+        </select>
+
+        <label>Reason statements not collected / notes</label>
+        <textarea id="statementNotes" placeholder="Optional brief notes"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <section id="lap" class="tab">
+    <div class="tab-title orange">LAP / Victim Advocate / Strangulation</div>
+    <div class="content grid">
+      <div>
+        <label>Intimate Partners?</label>
+        <select id="intimatePartner" onchange="updateAll()">
+          <option value="">Select</option><option>Yes</option><option>No</option><option>Unsure</option>
+        </select>
+        <div id="lapGuidance" class="result muted">Select intimate partner status.</div>
+
+        <label class="check"><input type="checkbox" data-item="Victim advocate offered"><span>Victim advocate offered</span></label>
+        <label>Victim Advocate Result</label>
+        <select id="advocateResult" onchange="updateAll()">
+          <option value="">Select</option><option>Accepted</option><option>Declined</option><option>Unable / Not Applicable</option>
+        </select>
+
+        <label class="check"><input type="checkbox" data-item="LAP/DV worksheet completed"><span>LAP/DV worksheet completed on criminal DV case</span></label>
+        <label class="check"><input type="checkbox" data-item="LAP uploaded or entered into supplemental as required"><span>LAP uploaded / supplemental completed as required</span></label>
+        <label class="check"><input type="checkbox" data-item="UCJIS LAP entry completed if intimate partners"><span>UCJIS LAP entry completed if intimate partners</span></label>
+
+        <label>LAP Questions 1-4: Any Yes?</label>
+        <select id="lap14" onchange="updateAll()">
+          <option value="">Select</option><option>Yes</option><option>No</option><option>Unknown</option>
+        </select>
+
+        <label>LAP Questions 5-11: Four or more Yes?</label>
+        <select id="lap511" onchange="updateAll()">
+          <option value="">Select</option><option>Yes</option><option>No</option><option>Unknown</option>
+        </select>
+
+        <div id="ywcaWarn" class="result warn hidden">LAP threshold selected: verify required YWCA/advocate/supervisor notification based on intimate partner status and current policy.</div>
+      </div>
+
+      <div>
+        <label>Strangulation / Suffocation Alleged?</label>
+        <select id="strangulation" onchange="updateAll()">
+          <option value="">Select</option><option>Yes</option><option>No</option>
+        </select>
+
+        <div id="strangulationReq" class="card hidden">
+          <strong>Strangulation Branch</strong>
+          <label class="check"><input type="checkbox" data-item="Strangulation form completed if applicable"><span>Strangulation supplement form completed</span></label>
+          <label class="check"><input type="checkbox" data-item="Strangulation exam offered if within five days"><span>Forensic strangulation exam offered if within 5 days</span></label>
+          <label class="check"><input type="checkbox" data-item="Forensic nurse contacted if applicable"><span>Forensic nurse contacted if immediate/recent and applicable</span></label>
+          <label class="check"><input type="checkbox" data-item="Strangulation injuries or lack of injury photographed"><span>Strangulation injuries/lack of injury photographed</span></label>
+        </div>
+
+        <label>Victim Medical Status</label>
+        <select id="victimMedical" onchange="updateAll()">
+          <option value="">Select</option><option>Not Needed</option><option>Offered / Declined</option><option>Requested</option><option>EMS Responded</option><option>Transported</option><option>Refused Treatment</option>
+        </select>
+        <label>Victim Medical Agency / Case #</label>
+        <input id="victimMedicalCase" placeholder="Example: UFA / UF26-XXXXX">
+
+        <label>Suspect Medical Status</label>
+        <select id="suspectMedical" onchange="updateAll()">
+          <option value="">Select</option><option>Not Needed</option><option>Offered / Declined</option><option>Requested</option><option>EMS Responded</option><option>Transported</option><option>Refused Treatment</option>
+        </select>
+        <label>Suspect Medical Agency / Case #</label>
+        <input id="suspectMedicalCase" placeholder="Example: UFA / UF26-XXXXX">
+
+        <div id="medicalWarn" class="result warn hidden">Medical response indicated: consider medical release waiver and document treatment/refusal/case number.</div>
+        <label class="check"><input type="checkbox" data-item="Medical release completed if applicable"><span>Medical release completed/signed or refusal documented if applicable</span></label>
+      </div>
+    </div>
+  </section>
+
+  <section id="court" class="tab">
+    <div class="tab-title red">Enforcement / Court Routing</div>
+    <div class="content grid">
+      <div>
+        <label>Offense Level</label>
+        <select id="offenseLevel" onchange="updateAll()">
+          <option value="">Select</option><option>Class B Misdemeanor</option><option>Class A Misdemeanor</option><option>Felony</option><option>Unknown / Pending Screening</option>
+        </select>
+        <div id="routingPanel" class="result muted">Select precinct and offense level for court routing.</div>
+
+        <label>Enforcement Action</label>
+        <select id="enforcement" onchange="updateAll()">
+          <option value="">Select</option><option>Custodial Arrest</option><option>Citation Release</option><option>Referred / Screening Only</option><option>Other / Confirm</option>
+        </select>
+
+        <label class="check"><input type="checkbox" data-item="Mandatory arrest/citation action completed if PC existed"><span>Mandatory arrest/citation action completed if PC existed</span></label>
+        <label class="check"><input type="checkbox" data-item="Citation issued if required, specifically Jurisdiction B / Jurisdiction A Class B"><span>Citation issued if required, specifically Jurisdiction B / Jurisdiction A Class B</span></label>
+        <label class="check"><input type="checkbox" data-item="No Contact Agreement completed"><span>No Contact Agreement completed</span></label>
+        <label class="check"><input type="checkbox" data-item="Jail Release Agreement completed if applicable"><span>Jail Release Agreement completed if applicable</span></label>
+        <label class="check"><input type="checkbox" data-item="All victims and protected persons listed on NCA/JRA"><span>All victims/protected persons listed on NCA/JRA</span></label>
+      </div>
+
+      <div>
+        <label class="check"><input type="checkbox" data-item="DV Smartsheet completed if applicable"><span>DV Smartsheet completed if applicable</span></label>
+        <label class="check"><input type="checkbox" data-item="Jurisdiction C City Justice Court referral completed if applicable"><span>Jurisdiction C City Justice Court referral completed if applicable</span></label>
+        <label class="check"><input type="checkbox" data-item="County Justice Court referral completed if applicable"><span>County Justice Court referral completed if applicable</span></label>
+        <label class="check"><input type="checkbox" data-item="EProsecutor submission completed if required"><span>EProsecutor submission completed if required</span></label>
+        <label class="check"><input type="checkbox" data-item="District Court filing completed for Class A or Felony DV"><span>District Court filing completed for Class A/Felony DV</span></label>
+        <label class="check"><input type="checkbox" data-item="Fact sheet or charging packet submitted if applicable"><span>Fact sheet / charging packet submitted if applicable</span></label>
+
+        <div class="card">
+          <strong>Standby Assist Reminder</strong>
+          <p style="margin:6px 0;font-size:.9rem;">If defendant later requests property pickup under JRA conditions, document assist by supplement or new GO per current process.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="review" class="tab">
+    <div class="tab-title slate">Final Compliance Review</div>
+    <div class="content grid">
+      <div>
+        <label class="check"><input type="checkbox" data-item="BWC active or reason documented"><span>BWC active or reason documented</span></label>
+        <label class="check"><input type="checkbox" data-item="Evidence.com photos uploaded and tagged correctly"><span>Evidence.com photos uploaded and tagged correctly</span></label>
+        <label class="check"><input type="checkbox" data-item="Statements uploaded"><span>Statements uploaded</span></label>
+        <label class="check"><input type="checkbox" data-item="Report and supplements completed"><span>Report and supplements completed</span></label>
+        <label class="check"><input type="checkbox" data-item="DV pamphlet/resources provided"><span>DV pamphlet/resources provided</span></label>
+
+        <label>Follow-up Notes</label>
+        <textarea id="notes" placeholder="Brief missing items or follow-up reminders"></textarea>
+      </div>
+      <div>
+        <button class="btn-blue" onclick="renderReview()">Refresh Compliance Review</button>
+        <div id="complianceBox" class="result muted">Click refresh or generate summary to view compliance issues.</div>
+        <div id="requiredForms" class="card"></div>
+        <div id="summaryOutput" class="output"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tab active" style="display:block;background:white;border:1px solid var(--border);border-radius:14px;margin-top:12px;">
+    <div class="content" style="font-size:.85rem;color:#475569;">
+      <strong>App Version:</strong> 1.0 &nbsp; | &nbsp;
+      <strong>Last Updated:</strong> June 2026 &nbsp; | &nbsp;
+      <strong>Use:</strong> Generic field checklist and routing assistant. Not affiliated with or endorsed by any agency.
+    </div>
+  </section>
+
+</main>
+
+<div class="actions">
+  <button class="btn-blue" onclick="generateSummary()">Generate Summary</button>
+  <button class="btn-green" onclick="emailSummary()">Email to Officer</button>
+  <button class="btn-gray" onclick="copySummary()">Copy Summary</button>
+  <button class="btn-red" onclick="clearForm()">Clear Form</button>
+</div>
+
+<script>
+function showTab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tabbtn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+function value(id){const el=document.getElementById(id);return el?el.value.trim():''}
+function allChecks(){return Array.from(document.querySelectorAll('input[type="checkbox"][data-item]'))}
+function isChecked(label){return allChecks().some(c=>c.dataset.item===label && c.checked)}
+document.addEventListener('change', updateAll);
+
+function dvApplies(){
+  const crime=value('qualCrime'), rel=value('relationship'), pc=value('pc');
+  const crimeOk=crime && crime!=='No Crime / Civil Only';
+  const relOk=rel && rel!=='None of the above' && rel!=='Unsure / Confirm';
+  const pcOk=pc==='Yes';
+  if(!crime || !rel || !pc) return 'unknown';
+  if(crimeOk && relOk && pcOk) return 'yes';
+  if(!crimeOk || !relOk || pc==='No') return 'no';
+  return 'review';
+}
+
+function getRouting(){
+  const p=value('precinct'), lvl=value('offenseLevel');
+  const holladay=['Jurisdiction A','Jurisdiction B'];
+  const slco=['Jurisdiction D','Jurisdiction E','Jurisdiction F','Jurisdiction G','Jurisdiction H','Jurisdiction I'];
+  let court='Not determined', citation='Not determined', epros='Not determined', reminders=[];
+  if(!p || !lvl) return {court,citation,epros,reminders};
+  if(lvl==='Class B Misdemeanor'){
+    epros='Not required unless routing requires EProsecutor';
+    if(holladay.includes(p)){court='Jurisdiction B Justice Court';citation='REQUIRED';reminders.push('Jurisdiction A/B Class B: citation required; verify DV Smartsheet and Jurisdiction B Justice Court submission.')}
+    else if(p==='Jurisdiction C'){court='Jurisdiction C City Justice Court';citation='Not required based on current local process';reminders.push('Jurisdiction C Class B: refer to Jurisdiction C City Justice Court; citation not required based on current local process.')}
+    else if(slco.includes(p)){court='County Justice Court';citation='Not required based on current local process';reminders.push('Class B: refer to County Justice Court through EProsecutor for Jurisdiction D/Jurisdiction E/Jurisdiction F/Jurisdiction G/Jurisdiction H/Jurisdiction I.')}
+    else{court='Confirm correct Justice Court';citation='Confirm';reminders.push('Confirm Class B justice court and citation requirement.')}
+  } else if(lvl==='Class A Misdemeanor' || lvl==='Felony'){
+    court='District Court'; citation='Not required based on current process'; epros='REQUIRED';
+    reminders.push('Countywide Class A/Felony DV: submit through EProsecutor to District Court.')
+  } else if(lvl==='Unknown / Pending Screening'){
+    court='Confirm after level determined'; citation='Confirm'; epros='Confirm if Class A/Felony';
+    reminders.push('Pending screening: verify court, citation requirement, and EProsecutor once level is known.')
+  }
+  return {court,citation,epros,reminders};
+}
+
+function medicalIndicated(s){return ['Requested','EMS Responded','Transported','Refused Treatment'].includes(s)}
+function lapThreshold(){return value('lap14')==='Yes' || value('lap511')==='Yes'}
+
+function requiredForms(){
+  const forms=['DV/LAP Worksheet','No Contact Agreement','Jail Release Agreement if booked','DV Statement when available'];
+  if(value('intimatePartner')==='Yes') forms.push('UCJIS LAP entry / LAP supplement');
+  if(value('strangulation')==='Yes') forms.push('Strangulation Supplement Form');
+  if(medicalIndicated(value('victimMedical')) || medicalIndicated(value('suspectMedical'))) forms.push('Medical Release / refusal documentation if applicable');
+  const r=getRouting();
+  if(r.citation==='REQUIRED') forms.push('Citation');
+  if(r.epros==='REQUIRED') forms.push('EProsecutor submission');
+  if(value('offenseLevel')==='Class A Misdemeanor' || value('offenseLevel')==='Felony') forms.push('District Court filing');
+  if(value('offenseLevel')==='Class B Misdemeanor') forms.push('Justice Court referral packet/process');
+  return forms;
+}
+
+function validationWarnings(){
+  const w=[];
+  if(dvApplies()==='yes'){
+    if(!isChecked('Victim advocate offered')) w.push('Victim advocate is not marked offered.');
+    if(!isChecked('LAP/DV worksheet completed')) w.push('LAP/DV worksheet is not marked complete.');
+    if(!isChecked('No Contact Agreement completed')) w.push('No Contact Agreement is not marked complete.');
+    if(!isChecked('Mandatory arrest/citation action completed if PC existed')) w.push('Mandatory arrest/citation action is not marked complete.');
+  }
+  if(value('childrenPresent')==='Yes') w.push('Children present selected: verify children are documented/listed where required.');
+  if(value('orderStatus')==='Unserved order') w.push('Unserved order selected: consider service if suspect is still on scene.');
+  if(value('injury')==='Yes'){
+    if(!isChecked('Injury photos taken')) w.push('Injury claimed/observed but injury photos are not marked complete.');
+    if(!isChecked('Area of claimed injury photographed even if no visible injury')) w.push('Claimed injury area photo is not marked complete.');
+  }
+  if(value('propertyDamage')==='Yes' && !isChecked('Property damage photographed')) w.push('Property damage selected but property damage photos are not marked complete.');
+  if(value('intimatePartner')==='Yes' && !isChecked('UCJIS LAP entry completed if intimate partners')) w.push('Intimate partner selected but UCJIS LAP entry is not marked complete.');
+  if(lapThreshold()) w.push('LAP threshold selected: verify YWCA/advocate/supervisor notification per current process.');
+  if(value('strangulation')==='Yes'){
+    if(!isChecked('Strangulation form completed if applicable')) w.push('Strangulation alleged but strangulation form is not marked complete.');
+    if(!isChecked('Strangulation exam offered if within five days')) w.push('Strangulation alleged but forensic exam offer is not marked complete.');
+  }
+  if((medicalIndicated(value('victimMedical')) || medicalIndicated(value('suspectMedical'))) && !isChecked('Medical release completed if applicable')) w.push('Medical response indicated but medical release/refusal documentation is not marked complete.');
+  const r=getRouting();
+  if(r.citation==='REQUIRED' && !isChecked('Citation issued if required, specifically Jurisdiction B / Jurisdiction A Class B')) w.push('Citation required for this routing but not marked complete.');
+  if(r.epros==='REQUIRED' && !isChecked('EProsecutor submission completed if required')) w.push('EProsecutor required but not marked complete.');
+  if((value('offenseLevel')==='Class A Misdemeanor' || value('offenseLevel')==='Felony') && !isChecked('District Court filing completed for Class A or Felony DV')) w.push('District Court filing required for Class A/Felony DV but not marked complete.');
+  if(!isChecked('BWC active or reason documented')) w.push('BWC active/reason is not marked complete.');
+  if(!isChecked('Evidence.com photos uploaded and tagged correctly')) w.push('Evidence.com upload/tagging is not marked complete.');
+  return w;
+}
+
+function updateAll(){
+  const res=document.getElementById('dvResult');
+  const dv=dvApplies();
+  if(dv==='yes'){res.className='result ok';res.textContent='DV Process Applies — continue through the DV workflow.'}
+  else if(dv==='no'){res.className='result bad';res.textContent='DV process does not appear to apply based on selected answers. Handle underlying crime/civil issue as appropriate.'}
+  else if(dv==='review'){res.className='result warn';res.textContent='Review needed — facts may support further investigation or supervisor/DV detective consult.'}
+  else{res.className='result muted';res.textContent='Select crime, relationship, and PC to determine whether DV process applies.'}
+
+  document.getElementById('childrenWarn').classList.toggle('hidden', value('childrenPresent')!=='Yes');
+  document.getElementById('orderWarn').classList.toggle('hidden', value('orderStatus')!=='Unserved order');
+  document.getElementById('photoReq').classList.toggle('hidden', value('injury')!=='Yes');
+  document.getElementById('propertyReq').classList.toggle('hidden', value('propertyDamage')!=='Yes');
+  document.getElementById('strangulationReq').classList.toggle('hidden', value('strangulation')!=='Yes');
+  document.getElementById('medicalWarn').classList.toggle('hidden', !(medicalIndicated(value('victimMedical')) || medicalIndicated(value('suspectMedical'))));
+  document.getElementById('ywcaWarn').classList.toggle('hidden', !lapThreshold());
+
+  const lap=document.getElementById('lapGuidance');
+  if(value('intimatePartner')==='Yes'){lap.className='result warn';lap.textContent='Intimate partner: LAP/DV worksheet required and UCJIS LAP entry required when criminal DV applies.'}
+  else if(value('intimatePartner')==='No'){lap.className='result muted';lap.textContent='Non-intimate partner: LAP/DV worksheet still completed on criminal DV; UCJIS LAP entry generally not required.'}
+  else{lap.className='result muted';lap.textContent='Select intimate partner status.'}
+
+  const r=getRouting();
+  document.getElementById('routingPanel').className = r.citation==='REQUIRED'||r.epros==='REQUIRED' ? 'result warn' : 'result ok';
+  document.getElementById('routingPanel').innerHTML = `<strong>Court / Submission:</strong> ${r.court}<br><strong>Citation:</strong> ${r.citation}<br><strong>EProsecutor:</strong> ${r.epros}<br>${r.reminders.map(x=>'• '+x).join('<br>')}`;
+
+  const checks=allChecks(), done=checks.filter(c=>c.checked).length, pct=checks.length?Math.round(done/checks.length*100):0;
+  document.getElementById('barFill').style.width=pct+'%';
+  document.getElementById('progressText').textContent=`Checklist completion: ${pct}% (${done}/${checks.length})`;
+  renderReview(false);
+}
+
+function renderReview(show=true){
+  const w=validationWarnings();
+  const forms=requiredForms();
+  const box=document.getElementById('complianceBox');
+  if(w.length){box.className='result bad';box.innerHTML='<strong>Missing / Review Items:</strong><br>'+w.map(x=>'⚠ '+x).join('<br>')}
+  else{box.className='result ok';box.textContent='No validation warnings generated based on selected answers.'}
+  document.getElementById('requiredForms').innerHTML='<strong>Likely Required Forms / Actions:</strong><br>'+forms.map(f=>`<div class="listline">• ${f}</div>`).join('');
+}
+
+function generateSummary(){
+  updateAll();
+  const r=getRouting(), w=validationWarnings(), forms=requiredForms();
+  const completed=allChecks().filter(c=>c.checked).map(c=>'✓ '+c.dataset.item);
+  const missing=allChecks().filter(c=>!c.checked).map(c=>'☐ '+c.dataset.item);
+  const summary=`DV INVESTIGATION CHECKLIST SUMMARY
+
+Case Number: ${value('caseNumber')||'Not entered'}
+Officer: ${value('officer')||'Not entered'}
+Precinct: ${value('precinct')||'Not selected'}
+Date Generated: ${new Date().toLocaleString()}
+
+DV QUALIFICATION:
+Crime: ${value('qualCrime')||'Not selected'}
+Relationship: ${value('relationship')||'Not selected'}
+Probable Cause: ${value('pc')||'Not selected'}
+DV Result: ${document.getElementById('dvResult').textContent}
+
+COURT ROUTING:
+Offense Level: ${value('offenseLevel')||'Not selected'}
+Court / Submission: ${r.court}
+Citation: ${r.citation}
+EProsecutor: ${r.epros}
+Routing Reminders:
+${r.reminders.length?r.reminders.map(x=>'• '+x).join('\n'):'None'}
+
+SPECIAL FACTORS:
+Children Present: ${value('childrenPresent')||'Not selected'}
+Pregnant Victim: ${value('pregnant')||'Not selected'}
+Order Status: ${value('orderStatus')||'Not selected'}
+Intimate Partners: ${value('intimatePartner')||'Not selected'}
+LAP 1-4 Any Yes: ${value('lap14')||'Not selected'}
+LAP 5-11 Four or More Yes: ${value('lap511')||'Not selected'}
+Strangulation: ${value('strangulation')||'Not selected'}
+Victim Medical: ${value('victimMedical')||'Not selected'} / ${value('victimMedicalCase')||'No case #'}
+Suspect Medical: ${value('suspectMedical')||'Not selected'} / ${value('suspectMedicalCase')||'No case #'}
+
+LIKELY REQUIRED FORMS / ACTIONS:
+${forms.map(f=>'• '+f).join('\n')}
+
+VALIDATION WARNINGS:
+${w.length?w.map(x=>'⚠ '+x).join('\n'):'None'}
+
+COMPLETED ITEMS:
+${completed.length?completed.join('\n'):'None marked complete'}
+
+NOT MARKED COMPLETE:
+${missing.length?missing.join('\n'):'None'}
+
+STATEMENT NOTES:
+${value('statementNotes')||'None'}
+
+FOLLOW-UP NOTES:
+${value('notes')||'None'}
+
+REMINDER:
+This checklist is a process aid only. Verify current law, policy, forms, court routing, supervisor guidance, and DV detective guidance.`;
+  const out=document.getElementById('summaryOutput');
+  out.textContent=summary;out.style.display='block';
+  return summary;
+}
+function emailSummary(){
+  const w=validationWarnings();
+  if(w.length && !confirm(`There are ${w.length} validation warning(s). Continue and include them in the email?`)) return;
+  const summary=generateSummary();
+  const to=value('email');
+  location.href=`mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent('DV Checklist Summary - '+(value('caseNumber')||'Case Number Needed'))}&body=${encodeURIComponent(summary)}`;
+}
+async function copySummary(){
+  const w=validationWarnings();
+  if(w.length && !confirm(`There are ${w.length} validation warning(s). Continue and copy anyway?`)) return;
+  const summary=generateSummary();
+  try{await navigator.clipboard.writeText(summary);alert('Summary copied.')}catch(e){alert('Copy failed. Highlight and copy manually.')}
+}
+function clearForm(){
+  if(!confirm('Clear all form data from this page?')) return;
+  document.querySelectorAll('input,select,textarea').forEach(el=>{if(el.type==='checkbox')el.checked=false;else el.value=''});
+  document.getElementById('summaryOutput').style.display='none';
+  updateAll();
+}
+updateAll();
+</script>
+</body>
+</html>
