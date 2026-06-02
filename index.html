@@ -48,12 +48,15 @@
     .output{background:#020617;color:#e2e8f0;white-space:pre-wrap;padding:14px;border-radius:10px;font-family:Consolas,monospace;font-size:.84rem;margin-top:12px;display:none}
     .pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#e2e8f0;font-size:.82rem;margin:2px}
     .listline{padding:4px 0;border-bottom:1px dashed #e2e8f0}
+    .resource-link{display:block;padding:12px;margin:8px 0;border-radius:10px;border:1px solid var(--border);background:#f8fafc;color:#1d4ed8;font-weight:bold;text-decoration:none}
+    .resource-link:hover{background:#eff6ff;text-decoration:underline}
+    .disabled-link{display:block;padding:12px;margin:8px 0;border-radius:10px;border:1px solid var(--border);background:#f1f5f9;color:#64748b;font-weight:bold}
   </style>
 </head>
 <body>
 <header>
   <h1>Domestic Violence Investigation Assistant</h1>
-  <p>Generic field checklist and court-routing workflow — no database, no cloud storage. Email/copy only.</p>
+  <p>Millcreek / Holladay field checklist and court-routing workflow — no database, no cloud storage. Email/copy only.</p>
 </header>
 
 <main>
@@ -71,7 +74,8 @@
     <button class="tabbtn" onclick="showTab('invest')">2. Investigation</button>
     <button class="tabbtn" onclick="showTab('lap')">3. LAP / Strangulation</button>
     <button class="tabbtn" onclick="showTab('court')">4. Enforcement / Court</button>
-    <button class="tabbtn" onclick="showTab('review')">5. Final Review</button>
+    <button class="tabbtn" onclick="showTab(event, 'resources')">5. Resources</button>
+    <button class="tabbtn" onclick="showTab(event, 'review')">6. Final Review</button>
   </div>
 
   <section id="qual" class="tab active">
@@ -87,9 +91,8 @@
         <label>Precinct</label>
         <select id="precinct" onchange="updateAll()">
           <option value="">Select</option>
-          <option>Jurisdiction A</option><option>Jurisdiction B</option><option>Jurisdiction C</option>
-          <option>Jurisdiction D</option><option>Jurisdiction E</option><option>Jurisdiction F</option>
-          <option>Jurisdiction G</option><option>Jurisdiction H</option><option>Jurisdiction I</option><option>Other</option>
+          <option>Millcreek</option>
+          <option>Holladay</option>
         </select>
       </div>
       <div>
@@ -285,7 +288,7 @@
         </select>
 
         <label class="check"><input type="checkbox" data-item="Mandatory arrest/citation action completed if PC existed"><span>Mandatory arrest/citation action completed if PC existed</span></label>
-        <label class="check"><input type="checkbox" data-item="Citation issued if required, specifically Jurisdiction B / Jurisdiction A Class B"><span>Citation issued if required, specifically Jurisdiction B / Jurisdiction A Class B</span></label>
+        <label class="check"><input type="checkbox" data-item="Citation issued if required for Millcreek/Holladay Class B"><span>Citation issued if required for Millcreek/Holladay Class B</span></label>
         <label class="check"><input type="checkbox" data-item="No Contact Agreement completed"><span>No Contact Agreement completed</span></label>
         <label class="check"><input type="checkbox" data-item="Jail Release Agreement completed if applicable"><span>Jail Release Agreement completed if applicable</span></label>
         <label class="check"><input type="checkbox" data-item="All victims and protected persons listed on NCA/JRA"><span>All victims/protected persons listed on NCA/JRA</span></label>
@@ -293,10 +296,10 @@
 
       <div>
         <label class="check"><input type="checkbox" data-item="DV Smartsheet completed if applicable"><span>DV Smartsheet completed if applicable</span></label>
-        <label class="check"><input type="checkbox" data-item="Jurisdiction C City Justice Court referral completed if applicable"><span>Jurisdiction C City Justice Court referral completed if applicable</span></label>
-        <label class="check"><input type="checkbox" data-item="County Justice Court referral completed if applicable"><span>County Justice Court referral completed if applicable</span></label>
+        <label class="check"><input type="checkbox" data-item="Holladay Justice Court referral completed if applicable"><span>Holladay Justice Court referral completed if applicable</span></label>
+        <label class="check"><input type="checkbox" data-item="Holladay Justice Court referral completed if applicable"><span>Holladay Justice Court referral completed if applicable</span></label>
         <label class="check"><input type="checkbox" data-item="EProsecutor submission completed if required"><span>EProsecutor submission completed if required</span></label>
-        <label class="check"><input type="checkbox" data-item="District Court filing completed for Class A or Felony DV"><span>District Court filing completed for Class A/Felony DV</span></label>
+        <label class="check"><input type="checkbox" data-item="Salt Lake District Court filing completed for Class A or Felony DV"><span>Salt Lake District Court filing completed for Class A/Felony DV</span></label>
         <label class="check"><input type="checkbox" data-item="Fact sheet or charging packet submitted if applicable"><span>Fact sheet / charging packet submitted if applicable</span></label>
 
         <div class="card">
@@ -306,6 +309,35 @@
       </div>
     </div>
   </section>
+
+  
+  <section id="resources" class="tab">
+    <div class="tab-title blue">Quick Links / Resources</div>
+    <div class="content">
+      <div class="notice">
+        <strong>Reference Links:</strong>
+        These links are shortcuts only. Confirm you are using the correct current form before submission.
+      </div>
+
+      <a class="resource-link" target="_blank" rel="noopener noreferrer" href="https://app.smartsheet.com/b/form/496bef27ca3b4a689bd1f75bbd2a509c">
+        Open Millcreek DV Smartsheet
+      </a>
+
+      <div class="disabled-link">
+        Holladay DV Smartsheet — add link when confirmed
+      </div>
+
+      <div class="card">
+        <strong>Suggested Future Links</strong>
+        <div class="listline">• Current DV worksheet / LAP form</div>
+        <div class="listline">• No Contact Agreement / JRA form</div>
+        <div class="listline">• Strangulation form</div>
+        <div class="listline">• Medical release form</div>
+        <div class="listline">• Current DV detective guidance</div>
+      </div>
+    </div>
+  </section>
+
 
   <section id="review" class="tab">
     <div class="tab-title slate">Final Compliance Review</div>
@@ -331,8 +363,9 @@
 
   <section class="tab active" style="display:block;background:white;border:1px solid var(--border);border-radius:14px;margin-top:12px;">
     <div class="content" style="font-size:.85rem;color:#475569;">
-      <strong>App Version:</strong> 1.0 &nbsp; | &nbsp;
+      <strong>App Version:</strong> 1.1 &nbsp; | &nbsp;
       <strong>Last Updated:</strong> June 2026 &nbsp; | &nbsp;
+      <strong>Supported Precincts:</strong> Millcreek / Holladay only &nbsp; | &nbsp;
       <strong>Use:</strong> Generic field checklist and routing assistant. Not affiliated with or endorsed by any agency.
     </div>
   </section>
@@ -371,22 +404,27 @@ function dvApplies(){
 
 function getRouting(){
   const p=value('precinct'), lvl=value('offenseLevel');
-  const holladay=['Jurisdiction A','Jurisdiction B'];
-  const slco=['Jurisdiction D','Jurisdiction E','Jurisdiction F','Jurisdiction G','Jurisdiction H','Jurisdiction I'];
   let court='Not determined', citation='Not determined', epros='Not determined', reminders=[];
   if(!p || !lvl) return {court,citation,epros,reminders};
+
   if(lvl==='Class B Misdemeanor'){
-    epros='Not required unless routing requires EProsecutor';
-    if(holladay.includes(p)){court='Jurisdiction B Justice Court';citation='REQUIRED';reminders.push('Jurisdiction A/B Class B: citation required; verify DV Smartsheet and Jurisdiction B Justice Court submission.')}
-    else if(p==='Jurisdiction C'){court='Jurisdiction C City Justice Court';citation='Not required based on current local process';reminders.push('Jurisdiction C Class B: refer to Jurisdiction C City Justice Court; citation not required based on current local process.')}
-    else if(slco.includes(p)){court='County Justice Court';citation='Not required based on current local process';reminders.push('Class B: refer to County Justice Court through EProsecutor for Jurisdiction D/Jurisdiction E/Jurisdiction F/Jurisdiction G/Jurisdiction H/Jurisdiction I.')}
-    else{court='Confirm correct Justice Court';citation='Confirm';reminders.push('Confirm Class B justice court and citation requirement.')}
+    court='Holladay Justice Court';
+    citation='REQUIRED';
+    epros='Not required unless otherwise directed';
+    reminders.push('Millcreek/Holladay Class B DV: citation required.');
+    reminders.push('Complete DV Smartsheet referral.');
+    reminders.push('Submit/referral path should be Holladay Justice Court.');
   } else if(lvl==='Class A Misdemeanor' || lvl==='Felony'){
-    court='District Court'; citation='Not required based on current process'; epros='REQUIRED';
-    reminders.push('Countywide Class A/Felony DV: submit through EProsecutor to District Court.')
+    court='Salt Lake District Court';
+    citation='Not required based on current process';
+    epros='REQUIRED';
+    reminders.push('Class A/Felony DV: submit through EProsecutor.');
+    reminders.push('Court path should be Salt Lake District Court.');
   } else if(lvl==='Unknown / Pending Screening'){
-    court='Confirm after level determined'; citation='Confirm'; epros='Confirm if Class A/Felony';
-    reminders.push('Pending screening: verify court, citation requirement, and EProsecutor once level is known.')
+    court='Confirm after offense level is determined';
+    citation='Confirm if Class B / Holladay Justice Court applies';
+    epros='Confirm if Class A or Felony';
+    reminders.push('Pending screening: verify court, citation requirement, and EProsecutor requirement once offense level is known.');
   }
   return {court,citation,epros,reminders};
 }
@@ -402,7 +440,7 @@ function requiredForms(){
   const r=getRouting();
   if(r.citation==='REQUIRED') forms.push('Citation');
   if(r.epros==='REQUIRED') forms.push('EProsecutor submission');
-  if(value('offenseLevel')==='Class A Misdemeanor' || value('offenseLevel')==='Felony') forms.push('District Court filing');
+  if(value('offenseLevel')==='Class A Misdemeanor' || value('offenseLevel')==='Felony') forms.push('Salt Lake District Court filing');
   if(value('offenseLevel')==='Class B Misdemeanor') forms.push('Justice Court referral packet/process');
   return forms;
 }
@@ -430,9 +468,10 @@ function validationWarnings(){
   }
   if((medicalIndicated(value('victimMedical')) || medicalIndicated(value('suspectMedical'))) && !isChecked('Medical release completed if applicable')) w.push('Medical response indicated but medical release/refusal documentation is not marked complete.');
   const r=getRouting();
-  if(r.citation==='REQUIRED' && !isChecked('Citation issued if required, specifically Jurisdiction B / Jurisdiction A Class B')) w.push('Citation required for this routing but not marked complete.');
+  if(r.citation==='REQUIRED' && !isChecked('Citation issued if required for Millcreek/Holladay Class B')) w.push('Citation required for this routing but not marked complete.');
+  if(value('offenseLevel')==='Class B Misdemeanor' && !isChecked('DV Smartsheet completed if applicable')) w.push('Class B Millcreek/Holladay case selected but DV Smartsheet is not marked complete.');
   if(r.epros==='REQUIRED' && !isChecked('EProsecutor submission completed if required')) w.push('EProsecutor required but not marked complete.');
-  if((value('offenseLevel')==='Class A Misdemeanor' || value('offenseLevel')==='Felony') && !isChecked('District Court filing completed for Class A or Felony DV')) w.push('District Court filing required for Class A/Felony DV but not marked complete.');
+  if((value('offenseLevel')==='Class A Misdemeanor' || value('offenseLevel')==='Felony') && !isChecked('Salt Lake District Court filing completed for Class A or Felony DV')) w.push('Salt Lake District Court filing required for Class A/Felony DV but not marked complete.');
   if(!isChecked('BWC active or reason documented')) w.push('BWC active/reason is not marked complete.');
   if(!isChecked('Evidence.com photos uploaded and tagged correctly')) w.push('Evidence.com upload/tagging is not marked complete.');
   return w;
