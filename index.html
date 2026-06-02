@@ -3,213 +3,424 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DV Investigation Assistant</title>
+  <title>DV Investigation Assistant - Millcreek / Holladay</title>
   <style>
-    :root{
-      --blue:#2563eb;--green:#16a34a;--orange:#ea580c;--red:#dc2626;--slate:#334155;
-      --light:#f8fafc;--border:#cbd5e1;--dark:#0f172a;--yellow:#facc15;
+    :root {
+      --blue:#2563eb;
+      --green:#16a34a;
+      --orange:#ea580c;
+      --red:#dc2626;
+      --slate:#334155;
+      --light:#f8fafc;
+      --border:#cbd5e1;
+      --dark:#0f172a;
+      --yellow:#facc15;
     }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Arial,sans-serif;background:#e2e8f0;color:var(--dark)}
-    header{background:linear-gradient(90deg,#172554,#2563eb);color:#fff;padding:16px;text-align:center}
-    header h1{margin:0;font-size:1.35rem}
-    header p{margin:6px 0 0;font-size:.9rem;opacity:.95}
-    main{max-width:1200px;margin:16px auto 90px;padding:0 12px}
-    .notice{background:#fff7ed;border-left:6px solid var(--orange);padding:12px;border-radius:10px;margin-bottom:12px;font-size:.92rem}
-    .tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-    .tabbtn{background:#fff;color:#0f172a;border:1px solid var(--border);padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:bold}
-    .tabbtn.active{background:var(--blue);color:#fff}
-    .tab{display:none;background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 2px 8px rgba(15,23,42,.08);overflow:hidden}
-    .tab.active{display:block}
-    .tab-title{padding:12px 16px;color:#fff;font-weight:bold;font-size:1.05rem}
-    .blue{background:var(--blue)}.green{background:var(--green)}.orange{background:var(--orange)}.red{background:var(--red)}.slate{background:var(--slate)}
-    .content{padding:14px 16px}
-    .grid{display:grid;grid-template-columns:1fr;gap:12px}
-    @media(min-width:850px){.grid{grid-template-columns:1fr 1fr}}
-    label{display:block;font-weight:bold;font-size:.9rem;margin:8px 0 4px}
-    input,select,textarea{width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;font-size:.95rem}
-    textarea{min-height:80px;resize:vertical}
-    .check{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px dashed #e2e8f0;font-size:.95rem;font-weight:normal}
-    .check input{width:auto;margin-top:2px}
-    .card{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:12px;margin:10px 0}
-    .result{padding:12px;border-radius:10px;margin:10px 0;font-weight:bold}
-    .ok{background:#dcfce7;border-left:6px solid var(--green);color:#14532d}
-    .bad{background:#fee2e2;border-left:6px solid var(--red);color:#7f1d1d}
-    .warn{background:#fef3c7;border-left:6px solid var(--yellow);color:#713f12}
-    .muted{background:#f1f5f9;border-left:6px solid #64748b;color:#334155}
-    .hidden{display:none}
-    .progress{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px}
-    .bar{height:16px;background:#e2e8f0;border-radius:999px;overflow:hidden}
-    .bar-fill{height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#16a34a);transition:.2s}
-    .progress-text{font-size:.9rem;margin-top:6px;color:#334155}
-    .actions{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:10px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;box-shadow:0 -2px 10px rgba(15,23,42,.12)}
-    button{border:0;border-radius:8px;padding:10px 13px;color:#fff;font-weight:bold;cursor:pointer}
-    .btn-blue{background:var(--blue)}.btn-green{background:var(--green)}.btn-red{background:var(--red)}.btn-gray{background:var(--slate)}
-    .output{background:#020617;color:#e2e8f0;white-space:pre-wrap;padding:14px;border-radius:10px;font-family:Consolas,monospace;font-size:.84rem;margin-top:12px;display:none}
-    .pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#e2e8f0;font-size:.82rem;margin:2px}
-    .listline{padding:4px 0;border-bottom:1px dashed #e2e8f0}
-    .resource-link{display:block;padding:12px;margin:8px 0;border-radius:10px;border:1px solid var(--border);background:#f8fafc;color:#1d4ed8;font-weight:bold;text-decoration:none}
-    .resource-link:hover{background:#eff6ff;text-decoration:underline}
-    .disabled-link{display:block;padding:12px;margin:8px 0;border-radius:10px;border:1px solid var(--border);background:#f1f5f9;color:#64748b;font-weight:bold}
-  
-    /* Phone / patrol-use optimization */
-    @media (max-width: 700px) {
-      header h1 { font-size: 1.2rem; }
-      header p { font-size: .85rem; }
-      main { margin-bottom: 120px; padding: 0 8px; }
 
-      .tabs {
-        overflow-x: auto;
-        flex-wrap: nowrap;
-        padding-bottom: 4px;
-        -webkit-overflow-scrolling: touch;
-      }
+    * { box-sizing:border-box; }
 
-      .tabbtn {
-        min-width: max-content;
-        min-height: 52px;
-        padding: 14px 16px;
-        font-size: .95rem;
-      }
+    body {
+      margin:0;
+      font-family:Arial, sans-serif;
+      background:#e2e8f0;
+      color:var(--dark);
+    }
 
-      label { font-size: .95rem; }
+    header {
+      background:linear-gradient(90deg,#172554,#2563eb);
+      color:white;
+      padding:18px 12px;
+      text-align:center;
+    }
 
-      input, select, textarea {
-        min-height: 48px;
-        font-size: 1rem;
-      }
+    header h1 {
+      margin:0;
+      font-size:1.45rem;
+    }
 
-      .check {
-        padding: 12px 0;
-        font-size: 1rem;
-      }
-
-      .check input {
-        transform: scale(1.25);
-        margin-right: 4px;
-      }
-
-      .actions { justify-content: stretch; }
-
-      .actions button {
-        flex: 1 1 45%;
-        min-height: 50px;
-        font-size: .95rem;
-      }
-
-      .content { padding: 12px; }
+    header p {
+      margin:6px 0 0;
+      font-size:.92rem;
+      opacity:.95;
     }
 
     .mode-toggle {
-      margin-top: 12px;
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      flex-wrap: wrap;
+      margin-top:12px;
+      display:flex;
+      gap:8px;
+      justify-content:center;
+      flex-wrap:wrap;
     }
 
     .mode-toggle button {
-      background: rgba(255,255,255,.18);
-      border: 1px solid rgba(255,255,255,.45);
-      color: white;
+      background:rgba(255,255,255,.18);
+      border:1px solid rgba(255,255,255,.5);
+      color:white;
+      border-radius:8px;
+      padding:10px 14px;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    main {
+      max-width:1150px;
+      margin:16px auto 90px;
+      padding:0 12px;
+    }
+
+    .notice {
+      background:#fff7ed;
+      border-left:6px solid var(--orange);
+      padding:12px;
+      border-radius:10px;
+      margin-bottom:12px;
+      font-size:.92rem;
+    }
+
+    .progress {
+      background:white;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:12px;
+      margin-bottom:12px;
+    }
+
+    .bar {
+      height:16px;
+      background:#e2e8f0;
+      border-radius:999px;
+      overflow:hidden;
+    }
+
+    .bar-fill {
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,#22c55e,#16a34a);
+      transition:.2s;
+    }
+
+    .progress-text {
+      margin-top:6px;
+      color:#334155;
+      font-size:.9rem;
+    }
+
+    .tabs {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-bottom:12px;
+    }
+
+    .tabbtn {
+      background:white;
+      color:#0f172a;
+      border:1px solid var(--border);
+      padding:10px 12px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:bold;
+    }
+
+    .tabbtn.active {
+      background:var(--blue);
+      color:white;
+    }
+
+    .tab {
+      display:none;
+      background:white;
+      border:1px solid var(--border);
+      border-radius:14px;
+      box-shadow:0 2px 8px rgba(15,23,42,.08);
+      overflow:hidden;
+    }
+
+    .tab.active { display:block; }
+
+    .tab-title {
+      padding:12px 16px;
+      color:white;
+      font-weight:bold;
+      font-size:1.05rem;
+    }
+
+    .blue{background:var(--blue);}
+    .green{background:var(--green);}
+    .orange{background:var(--orange);}
+    .red{background:var(--red);}
+    .slate{background:var(--slate);}
+
+    .content { padding:14px 16px; }
+
+    .grid {
+      display:grid;
+      grid-template-columns:1fr;
+      gap:12px;
+    }
+
+    @media(min-width:850px){
+      .grid { grid-template-columns:1fr 1fr; }
+    }
+
+    label {
+      display:block;
+      font-weight:bold;
+      font-size:.9rem;
+      margin:8px 0 4px;
+    }
+
+    input, select, textarea {
+      width:100%;
+      padding:9px;
+      border:1px solid var(--border);
+      border-radius:8px;
+      font-size:.95rem;
+    }
+
+    textarea {
+      min-height:80px;
+      resize:vertical;
+    }
+
+    .check {
+      display:flex;
+      gap:8px;
+      align-items:flex-start;
+      padding:8px 0;
+      border-bottom:1px dashed #e2e8f0;
+      font-size:.95rem;
+      font-weight:normal;
+    }
+
+    .check input {
+      width:auto;
+      margin-top:2px;
+    }
+
+    .card {
+      background:#f8fafc;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:12px;
+      margin:10px 0;
+    }
+
+    .result {
+      padding:12px;
+      border-radius:10px;
+      margin:10px 0;
+      font-weight:bold;
+    }
+
+    .ok { background:#dcfce7; border-left:6px solid var(--green); color:#14532d; }
+    .bad { background:#fee2e2; border-left:6px solid var(--red); color:#7f1d1d; }
+    .warn { background:#fef3c7; border-left:6px solid var(--yellow); color:#713f12; }
+    .muted { background:#f1f5f9; border-left:6px solid #64748b; color:#334155; }
+
+    .hidden { display:none; }
+
+    .resource-link {
+      display:block;
+      padding:12px;
+      margin:8px 0;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background:#f8fafc;
+      color:#1d4ed8;
+      font-weight:bold;
+      text-decoration:none;
+    }
+
+    .resource-link:hover {
+      background:#eff6ff;
+      text-decoration:underline;
+    }
+
+    .listline {
+      padding:4px 0;
+      border-bottom:1px dashed #e2e8f0;
+    }
+
+    .output {
+      background:#020617;
+      color:#e2e8f0;
+      white-space:pre-wrap;
+      padding:14px;
+      border-radius:10px;
+      font-family:Consolas, monospace;
+      font-size:.84rem;
+      margin-top:12px;
+      display:none;
+      overflow:auto;
+    }
+
+    .actions {
+      position:fixed;
+      bottom:0;
+      left:0;
+      right:0;
+      background:white;
+      border-top:1px solid var(--border);
+      padding:10px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:center;
+      box-shadow:0 -2px 10px rgba(15,23,42,.12);
+      z-index:10;
+    }
+
+    button {
+      border:0;
+      border-radius:8px;
+      padding:10px 13px;
+      color:white;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    .btn-blue{background:var(--blue);}
+    .btn-green{background:var(--green);}
+    .btn-gray{background:var(--slate);}
+    .btn-red{background:var(--red);}
+
+    @media(max-width:700px){
+      header h1 { font-size:1.18rem; }
+      header p { font-size:.84rem; }
+
+      main {
+        margin-bottom:120px;
+        padding:0 8px;
+      }
+
+      .tabs {
+        overflow-x:auto;
+        flex-wrap:nowrap;
+        padding-bottom:4px;
+        -webkit-overflow-scrolling:touch;
+      }
+
+      .tabbtn {
+        min-width:max-content;
+        min-height:52px;
+        padding:14px 16px;
+        font-size:.95rem;
+      }
+
+      input, select, textarea {
+        min-height:48px;
+        font-size:1rem;
+      }
+
+      .check {
+        padding:12px 0;
+        font-size:1rem;
+      }
+
+      .check input {
+        transform:scale(1.25);
+        margin-right:4px;
+      }
+
+      .actions { justify-content:stretch; }
+
+      .actions button {
+        flex:1 1 45%;
+        min-height:50px;
+        font-size:.95rem;
+      }
     }
 
     body.night {
-      background: #020617;
-      color: #e2e8f0;
+      background:#020617;
+      color:#e2e8f0;
     }
 
     body.night header {
-      background: linear-gradient(90deg, #020617, #1e3a8a);
+      background:linear-gradient(90deg,#020617,#1e3a8a);
     }
 
     body.night .tab,
     body.night .progress,
     body.night .actions,
-    body.night section[style*="background:white"] {
-      background: #0f172a !important;
-      color: #e2e8f0;
-      border-color: #334155;
+    body.night .version-card {
+      background:#0f172a !important;
+      color:#e2e8f0;
+      border-color:#334155;
     }
 
     body.night .tabbtn {
-      background: #1e293b;
-      color: #e2e8f0;
-      border-color: #334155;
+      background:#1e293b;
+      color:#e2e8f0;
+      border-color:#334155;
     }
 
     body.night .tabbtn.active {
-      background: #2563eb;
-      color: white;
+      background:#2563eb;
+      color:white;
     }
 
     body.night input,
     body.night select,
     body.night textarea {
-      background: #020617;
-      color: #e2e8f0;
-      border-color: #475569;
+      background:#020617;
+      color:#e2e8f0;
+      border-color:#475569;
     }
 
     body.night .card,
     body.night .resource-link {
-      background: #1e293b;
-      color: #93c5fd;
-      border-color: #334155;
-    }
-
-    body.night .disabled-link {
-      background: #111827;
-      color: #94a3b8;
-      border-color: #334155;
+      background:#1e293b;
+      color:#93c5fd;
+      border-color:#334155;
     }
 
     body.night .notice {
-      background: #431407;
-      color: #fed7aa;
-      border-left-color: #fb923c;
+      background:#431407;
+      color:#fed7aa;
+      border-left-color:#fb923c;
     }
 
     body.night .muted {
-      background: #1e293b;
-      color: #cbd5e1;
-      border-left-color: #64748b;
+      background:#1e293b;
+      color:#cbd5e1;
+      border-left-color:#64748b;
     }
 
     body.night .ok {
-      background: #052e16;
-      color: #bbf7d0;
-      border-left-color: #22c55e;
+      background:#052e16;
+      color:#bbf7d0;
+      border-left-color:#22c55e;
     }
 
     body.night .warn {
-      background: #422006;
-      color: #fde68a;
-      border-left-color: #facc15;
+      background:#422006;
+      color:#fde68a;
+      border-left-color:#facc15;
     }
 
     body.night .bad {
-      background: #450a0a;
-      color: #fecaca;
-      border-left-color: #ef4444;
+      background:#450a0a;
+      color:#fecaca;
+      border-left-color:#ef4444;
     }
 
     body.night .progress-text {
-      color: #cbd5e1;
+      color:#cbd5e1;
     }
 
     body.night .listline,
     body.night .check {
-      border-bottom-color: #334155;
+      border-bottom-color:#334155;
     }
-
   </style>
 </head>
+
 <body>
 <header>
   <h1>Domestic Violence Investigation Assistant</h1>
   <p>Millcreek / Holladay field checklist and court-routing workflow — no database, no cloud storage. Email/copy only.</p>
-
   <div class="mode-toggle">
     <button type="button" id="dayModeBtn">Day Mode</button>
     <button type="button" id="nightModeBtn">Night Mode</button>
@@ -218,7 +429,9 @@
 
 <main>
   <div class="notice">
-    <strong>Use note:</strong> This is a process aid, not a reporting system. Avoid entering full statements, protected addresses, DOBs, SSNs, or sensitive victim details. Verify current law, policy, court procedures, and supervisor guidance before relying on any routing rule.
+    <strong>Use note:</strong>
+    This is a process aid, not a report-writing system. Avoid entering full statements, protected addresses, DOBs, SSNs, or sensitive victim details.
+    Verify current law, agency policy, court procedures, and supervisor/DV detective guidance before relying on any routing rule.
   </div>
 
   <div class="progress">
@@ -227,34 +440,38 @@
   </div>
 
   <div class="tabs">
-    <button class="tabbtn active" onclick="showTab(event, 'qual')">1. DV Qualification</button>
-    <button class="tabbtn" onclick="showTab(event, 'invest')">2. Investigation</button>
-    <button class="tabbtn" onclick="showTab(event, 'lap')">3. LAP / Strangulation</button>
-    <button class="tabbtn" onclick="showTab(event, 'court')">4. Enforcement / Court</button>
-    <button class="tabbtn" onclick="showTab(event, 'resources')">5. Resources</button>
-    <button class="tabbtn" onclick="showTab(event, 'review')">6. Final Review</button>
+    <button type="button" class="tabbtn active" data-tab="qual">1. DV Qualification</button>
+    <button type="button" class="tabbtn" data-tab="invest">2. Investigation</button>
+    <button type="button" class="tabbtn" data-tab="lap">3. LAP / Strangulation</button>
+    <button type="button" class="tabbtn" data-tab="court">4. Enforcement / Court</button>
+    <button type="button" class="tabbtn" data-tab="resources">5. Resources</button>
+    <button type="button" class="tabbtn" data-tab="review">6. Final Review</button>
   </div>
 
   <section id="qual" class="tab active">
     <div class="tab-title blue">DV Qualification Wizard</div>
     <div class="content grid">
       <div>
-        <label>Case Number</label>
-        <input id="caseNumber" placeholder="CO26-XXXXX" oninput="updateAll()">
-        <label>Officer / User</label>
-        <input id="officer" placeholder="Name / Unit" oninput="updateAll()">
-        <label>User Email</label>
-        <input id="email" placeholder="name@example.com">
-        <label>Precinct</label>
-        <select id="precinct" onchange="updateAll()">
+        <label for="caseNumber">Case Number</label>
+        <input id="caseNumber" placeholder="CO26-XXXXX" />
+
+        <label for="officer">Officer / User</label>
+        <input id="officer" placeholder="Name / Unit" />
+
+        <label for="email">User Email</label>
+        <input id="email" placeholder="name@example.com" />
+
+        <label for="precinct">Precinct</label>
+        <select id="precinct">
           <option value="">Select</option>
           <option>Millcreek</option>
           <option>Holladay</option>
         </select>
       </div>
+
       <div>
-        <label>Did a qualifying crime occur?</label>
-        <select id="qualCrime" onchange="updateAll()">
+        <label for="qualCrime">Did a qualifying crime occur?</label>
+        <select id="qualCrime">
           <option value="">Select</option>
           <option>Assault</option>
           <option>Criminal Mischief / Property Damage</option>
@@ -266,8 +483,8 @@
           <option>No Crime / Civil Only</option>
         </select>
 
-        <label>Qualifying relationship</label>
-        <select id="relationship" onchange="updateAll()">
+        <label for="relationship">Qualifying relationship</label>
+        <select id="relationship">
           <option value="">Select</option>
           <option>Current spouse</option>
           <option>Former spouse</option>
@@ -283,10 +500,12 @@
           <option>Unsure / Confirm</option>
         </select>
 
-        <label>Probable Cause?</label>
-        <select id="pc" onchange="updateAll()">
+        <label for="pc">Probable Cause?</label>
+        <select id="pc">
           <option value="">Select</option>
-          <option>Yes</option><option>No</option><option>Still Investigating</option>
+          <option>Yes</option>
+          <option>No</option>
+          <option>Still Investigating</option>
         </select>
 
         <div id="dvResult" class="result muted">Select crime, relationship, and PC to determine whether DV process applies.</div>
@@ -306,28 +525,40 @@
           <label class="check"><input type="checkbox" data-item="Intimate partner status clearly documented"><span>Intimate partner status clearly documented in narrative</span></label>
         </div>
 
-        <label>Children Present?</label>
-        <select id="childrenPresent" onchange="updateAll()">
-          <option value="">Select</option><option>Yes</option><option>No</option>
+        <label for="childrenPresent">Children Present?</label>
+        <select id="childrenPresent">
+          <option value="">Select</option>
+          <option>Yes</option>
+          <option>No</option>
         </select>
+
         <div id="childrenWarn" class="result warn hidden">Children present: ensure children are documented/listed properly when applicable.</div>
 
-        <label>Victim Pregnant?</label>
-        <select id="pregnant" onchange="updateAll()">
-          <option value="">Select</option><option>Yes</option><option>No</option><option>Unknown</option>
+        <label for="pregnant">Victim Pregnant?</label>
+        <select id="pregnant">
+          <option value="">Select</option>
+          <option>Yes</option>
+          <option>No</option>
+          <option>Unknown</option>
         </select>
 
-        <label>Protective / No Contact / Stalking Order?</label>
-        <select id="orderStatus" onchange="updateAll()">
-          <option value="">Select</option><option>Served order</option><option>Unserved order</option><option>None known</option>
+        <label for="orderStatus">Protective / No Contact / Stalking Order?</label>
+        <select id="orderStatus">
+          <option value="">Select</option>
+          <option>Served order</option>
+          <option>Unserved order</option>
+          <option>None known</option>
         </select>
+
         <div id="orderWarn" class="result warn hidden">Unserved order: consider service if suspect is still on scene.</div>
       </div>
 
       <div>
-        <label>Injury Claimed or Observed?</label>
-        <select id="injury" onchange="updateAll()">
-          <option value="">Select</option><option>Yes</option><option>No</option>
+        <label for="injury">Injury Claimed or Observed?</label>
+        <select id="injury">
+          <option value="">Select</option>
+          <option>Yes</option>
+          <option>No</option>
         </select>
 
         <div id="photoReq" class="card hidden">
@@ -337,26 +568,35 @@
           <label class="check"><input type="checkbox" data-item="Area of claimed injury photographed even if no visible injury"><span>Claimed injury area photographed even if no visible injury</span></label>
         </div>
 
-        <label>Property Damage?</label>
-        <select id="propertyDamage" onchange="updateAll()">
-          <option value="">Select</option><option>Yes</option><option>No</option>
+        <label for="propertyDamage">Property Damage?</label>
+        <select id="propertyDamage">
+          <option value="">Select</option>
+          <option>Yes</option>
+          <option>No</option>
         </select>
 
         <div id="propertyReq" class="card hidden">
           <label class="check"><input type="checkbox" data-item="Property damage photographed"><span>Property damage photographed</span></label>
         </div>
 
-        <label>Victim Statement</label>
-        <select id="victimStatement" onchange="updateAll()">
-          <option value="">Select</option><option>Obtained / Signed</option><option>Refused</option><option>Unable</option><option>Not Applicable</option>
+        <label for="victimStatement">Victim Statement</label>
+        <select id="victimStatement">
+          <option value="">Select</option>
+          <option>Obtained / Signed</option>
+          <option>Refused</option>
+          <option>Unable</option>
+          <option>Not Applicable</option>
         </select>
 
-        <label>Witness Statements</label>
-        <select id="witnessStatement" onchange="updateAll()">
-          <option value="">Select</option><option>Obtained / Signed</option><option>Refused</option><option>Unable / No Witnesses</option>
+        <label for="witnessStatement">Witness Statements</label>
+        <select id="witnessStatement">
+          <option value="">Select</option>
+          <option>Obtained / Signed</option>
+          <option>Refused</option>
+          <option>Unable / No Witnesses</option>
         </select>
 
-        <label>Reason statements not collected / notes</label>
+        <label for="statementNotes">Reason statements not collected / notes</label>
         <textarea id="statementNotes" placeholder="Optional brief notes"></textarea>
       </div>
     </div>
@@ -366,39 +606,55 @@
     <div class="tab-title orange">LAP / Victim Advocate / Strangulation</div>
     <div class="content grid">
       <div>
-        <label>Intimate Partners?</label>
-        <select id="intimatePartner" onchange="updateAll()">
-          <option value="">Select</option><option>Yes</option><option>No</option><option>Unsure</option>
+        <label for="intimatePartner">Intimate Partners?</label>
+        <select id="intimatePartner">
+          <option value="">Select</option>
+          <option>Yes</option>
+          <option>No</option>
+          <option>Unsure</option>
         </select>
+
         <div id="lapGuidance" class="result muted">Select intimate partner status.</div>
 
         <label class="check"><input type="checkbox" data-item="Victim advocate offered"><span>Victim advocate offered</span></label>
-        <label>Victim Advocate Result</label>
-        <select id="advocateResult" onchange="updateAll()">
-          <option value="">Select</option><option>Accepted</option><option>Declined</option><option>Unable / Not Applicable</option>
+
+        <label for="advocateResult">Victim Advocate Result</label>
+        <select id="advocateResult">
+          <option value="">Select</option>
+          <option>Accepted</option>
+          <option>Declined</option>
+          <option>Unable / Not Applicable</option>
         </select>
 
         <label class="check"><input type="checkbox" data-item="LAP/DV worksheet completed"><span>LAP/DV worksheet completed on criminal DV case</span></label>
         <label class="check"><input type="checkbox" data-item="LAP uploaded or entered into supplemental as required"><span>LAP uploaded / supplemental completed as required</span></label>
         <label class="check"><input type="checkbox" data-item="UCJIS LAP entry completed if intimate partners"><span>UCJIS LAP entry completed if intimate partners</span></label>
 
-        <label>LAP Questions 1-4: Any Yes?</label>
-        <select id="lap14" onchange="updateAll()">
-          <option value="">Select</option><option>Yes</option><option>No</option><option>Unknown</option>
+        <label for="lap14">LAP Questions 1-4: Any Yes?</label>
+        <select id="lap14">
+          <option value="">Select</option>
+          <option>Yes</option>
+          <option>No</option>
+          <option>Unknown</option>
         </select>
 
-        <label>LAP Questions 5-11: Four or more Yes?</label>
-        <select id="lap511" onchange="updateAll()">
-          <option value="">Select</option><option>Yes</option><option>No</option><option>Unknown</option>
+        <label for="lap511">LAP Questions 5-11: Four or more Yes?</label>
+        <select id="lap511">
+          <option value="">Select</option>
+          <option>Yes</option>
+          <option>No</option>
+          <option>Unknown</option>
         </select>
 
-        <div id="ywcaWarn" class="result warn hidden">LAP threshold selected: verify required YWCA/advocate/supervisor notification based on intimate partner status and current policy.</div>
+        <div id="ywcaWarn" class="result warn hidden">LAP threshold selected: verify required advocate/supervisor notification based on intimate partner status and current policy.</div>
       </div>
 
       <div>
-        <label>Strangulation / Suffocation Alleged?</label>
-        <select id="strangulation" onchange="updateAll()">
-          <option value="">Select</option><option>Yes</option><option>No</option>
+        <label for="strangulation">Strangulation / Suffocation Alleged?</label>
+        <select id="strangulation">
+          <option value="">Select</option>
+          <option>Yes</option>
+          <option>No</option>
         </select>
 
         <div id="strangulationReq" class="card hidden">
@@ -409,21 +665,36 @@
           <label class="check"><input type="checkbox" data-item="Strangulation injuries or lack of injury photographed"><span>Strangulation injuries/lack of injury photographed</span></label>
         </div>
 
-        <label>Victim Medical Status</label>
-        <select id="victimMedical" onchange="updateAll()">
-          <option value="">Select</option><option>Not Needed</option><option>Offered / Declined</option><option>Requested</option><option>EMS Responded</option><option>Transported</option><option>Refused Treatment</option>
+        <label for="victimMedical">Victim Medical Status</label>
+        <select id="victimMedical">
+          <option value="">Select</option>
+          <option>Not Needed</option>
+          <option>Offered / Declined</option>
+          <option>Requested</option>
+          <option>EMS Responded</option>
+          <option>Transported</option>
+          <option>Refused Treatment</option>
         </select>
-        <label>Victim Medical Agency / Case #</label>
-        <input id="victimMedicalCase" placeholder="Example: UFA / UF26-XXXXX">
 
-        <label>Suspect Medical Status</label>
-        <select id="suspectMedical" onchange="updateAll()">
-          <option value="">Select</option><option>Not Needed</option><option>Offered / Declined</option><option>Requested</option><option>EMS Responded</option><option>Transported</option><option>Refused Treatment</option>
+        <label for="victimMedicalCase">Victim Medical Agency / Case #</label>
+        <input id="victimMedicalCase" placeholder="Example: UFA / UF26-XXXXX" />
+
+        <label for="suspectMedical">Suspect Medical Status</label>
+        <select id="suspectMedical">
+          <option value="">Select</option>
+          <option>Not Needed</option>
+          <option>Offered / Declined</option>
+          <option>Requested</option>
+          <option>EMS Responded</option>
+          <option>Transported</option>
+          <option>Refused Treatment</option>
         </select>
-        <label>Suspect Medical Agency / Case #</label>
-        <input id="suspectMedicalCase" placeholder="Example: UFA / UF26-XXXXX">
+
+        <label for="suspectMedicalCase">Suspect Medical Agency / Case #</label>
+        <input id="suspectMedicalCase" placeholder="Example: UFA / UF26-XXXXX" />
 
         <div id="medicalWarn" class="result warn hidden">Medical response indicated: consider medical release waiver and document treatment/refusal/case number.</div>
+
         <label class="check"><input type="checkbox" data-item="Medical release completed if applicable"><span>Medical release completed/signed or refusal documented if applicable</span></label>
       </div>
     </div>
@@ -433,15 +704,25 @@
     <div class="tab-title red">Enforcement / Court Routing</div>
     <div class="content grid">
       <div>
-        <label>Offense Level</label>
-        <select id="offenseLevel" onchange="updateAll()">
-          <option value="">Select</option><option>Class B Misdemeanor</option><option>Class A Misdemeanor</option><option>Felony</option><option>Unknown / Pending Screening</option>
+        <label for="offenseLevel">Offense Level</label>
+        <select id="offenseLevel">
+          <option value="">Select</option>
+          <option>Class B Misdemeanor</option>
+          <option>Class A Misdemeanor</option>
+          <option>Felony</option>
+          <option>Unknown / Pending Screening</option>
         </select>
-        <div id="routingPanel" class="result muted">Select precinct and offense level for court routing.</div>
 
-        <label>Enforcement Action</label>
-        <select id="enforcement" onchange="updateAll()">
-          <option value="">Select</option><option>Custodial Arrest</option><option>Citation Release</option><option>Referred / Screening Only</option><option>Other / Confirm</option>
+        <div id="routingPanel" class="result muted">Select precinct and offense level for court routing.</div>
+        <div id="smartSheetShortcut" class="card hidden"></div>
+
+        <label for="enforcement">Enforcement Action</label>
+        <select id="enforcement">
+          <option value="">Select</option>
+          <option>Custodial Arrest</option>
+          <option>Citation Release</option>
+          <option>Referred / Screening Only</option>
+          <option>Other / Confirm</option>
         </select>
 
         <label class="check"><input type="checkbox" data-item="Mandatory arrest/citation action completed if PC existed"><span>Mandatory arrest/citation action completed if PC existed</span></label>
@@ -459,8 +740,10 @@
         <label class="check"><input type="checkbox" data-item="Fact sheet or charging packet submitted if applicable"><span>Fact sheet / charging packet submitted if applicable</span></label>
 
         <div class="card">
-          <strong>Standby Assist Reminder</strong>
-          <p style="margin:6px 0;font-size:.9rem;">If defendant later requests property pickup under JRA conditions, document assist by supplement or new GO per current process.</p>
+          <strong>Current Supported Routing</strong>
+          <p style="margin:6px 0;font-size:.9rem;">
+            This version is limited to Millcreek and Holladay only. Add other precincts only after confirming their court routing, required forms, and local detective expectations.
+          </p>
         </div>
       </div>
     </div>
@@ -483,7 +766,6 @@
     </div>
   </section>
 
-
   <section id="review" class="tab">
     <div class="tab-title slate">Final Compliance Review</div>
     <div class="content grid">
@@ -494,11 +776,12 @@
         <label class="check"><input type="checkbox" data-item="Report and supplements completed"><span>Report and supplements completed</span></label>
         <label class="check"><input type="checkbox" data-item="DV pamphlet/resources provided"><span>DV pamphlet/resources provided</span></label>
 
-        <label>Follow-up Notes</label>
+        <label for="notes">Follow-up Notes</label>
         <textarea id="notes" placeholder="Brief missing items or follow-up reminders"></textarea>
       </div>
+
       <div>
-        <button class="btn-blue" onclick="renderReview()">Refresh Compliance Review</button>
+        <button type="button" class="btn-blue" id="refreshReviewBtn">Refresh Compliance Review</button>
         <div id="complianceBox" class="result muted">Click refresh or generate summary to view compliance issues.</div>
         <div id="requiredForms" class="card"></div>
         <div id="summaryOutput" class="output"></div>
@@ -506,469 +789,443 @@
     </div>
   </section>
 
-  <section class="tab active" style="display:block;background:white;border:1px solid var(--border);border-radius:14px;margin-top:12px;">
+  <section class="version-card" style="background:white;border:1px solid var(--border);border-radius:14px;margin-top:12px;">
     <div class="content" style="font-size:.85rem;color:#475569;">
-      <strong>App Version:</strong> 1.8 | &nbsp;
-      <strong>Last Updated:</strong> June 2026 &nbsp; | &nbsp;
-      <strong>Supported Precincts:</strong> Millcreek / Holladay only &nbsp; | &nbsp;
+      <strong>App Version:</strong> 2.0 |
+      <strong>Last Updated:</strong> June 2026 |
+      <strong>Supported Precincts:</strong> Millcreek / Holladay only |
       <strong>Use:</strong> Generic field checklist and routing assistant. Not affiliated with or endorsed by any agency.
     </div>
   </section>
-
 </main>
 
 <div class="actions">
-  <button type="button" class="btn-blue" onclick="generateSummary()">Generate Summary</button>
-  <button type="button" class="btn-green" onclick="emailSummary()">Email to Officer</button>
-  <button type="button" class="btn-gray" onclick="copySummary()">Copy Summary</button>
-  <button type="button" class="btn-red" onclick="clearForm()">Clear Form</button>
+  <button type="button" class="btn-blue" id="generateBtn">Generate Summary</button>
+  <button type="button" class="btn-green" id="emailBtn">Email to Officer</button>
+  <button type="button" class="btn-gray" id="copyBtn">Copy Summary</button>
+  <button type="button" class="btn-red" id="clearBtn">Clear Form</button>
 </div>
 
 <script>
-function value(id) {
-  const element = document.getElementById(id);
-  return element ? String(element.value || '').trim() : '';
-}
+(function () {
+  'use strict';
 
-function allChecks() {
-  return Array.from(document.querySelectorAll('input[type="checkbox"][data-item]'));
-}
-
-function isChecked(label) {
-  return allChecks().some(check => check.dataset.item === label && check.checked);
-}
-
-function showTab(event, id) {
-  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-  document.querySelectorAll('.tabbtn').forEach(button => button.classList.remove('active'));
-
-  const tab = document.getElementById(id);
-  if (tab) tab.classList.add('active');
-
-  if (event && event.target) {
-    event.target.classList.add('active');
+  function value(id) {
+    var el = document.getElementById(id);
+    return el ? String(el.value || '').trim() : '';
   }
-}
 
-function applyDisplayMode(mode) {
-  if (mode === 'night') {
-    document.body.classList.add('night');
-    try { localStorage.setItem('dvAssistantMode', 'night'); } catch (error) {}
-  } else {
-    document.body.classList.remove('night');
-    try { localStorage.setItem('dvAssistantMode', 'day'); } catch (error) {}
+  function allChecks() {
+    return Array.prototype.slice.call(document.querySelectorAll('input[type="checkbox"][data-item]'));
   }
-}
 
-function initializeDisplayMode() {
-  let saved = 'day';
-  try { saved = localStorage.getItem('dvAssistantMode') || 'day'; } catch (error) {}
-
-  applyDisplayMode(saved);
-
-  const dayButton = document.getElementById('dayModeBtn');
-  const nightButton = document.getElementById('nightModeBtn');
-
-  if (dayButton) {
-    dayButton.addEventListener('click', function () {
-      applyDisplayMode('day');
+  function isChecked(label) {
+    return allChecks().some(function (check) {
+      return check.dataset.item === label && check.checked;
     });
   }
 
-  if (nightButton) {
-    nightButton.addEventListener('click', function () {
-      applyDisplayMode('night');
+  function setMode(mode) {
+    if (mode === 'night') {
+      document.body.classList.add('night');
+      try { localStorage.setItem('dvAssistantMode', 'night'); } catch (e) {}
+    } else {
+      document.body.classList.remove('night');
+      try { localStorage.setItem('dvAssistantMode', 'day'); } catch (e) {}
+    }
+  }
+
+  function loadMode() {
+    var saved = 'day';
+    try { saved = localStorage.getItem('dvAssistantMode') || 'day'; } catch (e) {}
+    setMode(saved);
+  }
+
+  function showTab(id) {
+    document.querySelectorAll('.tab').forEach(function (tab) {
+      tab.classList.remove('active');
     });
-  }
-}
 
-function dvApplies() {
-  const crime = value('qualCrime');
-  const relationship = value('relationship');
-  const pc = value('pc');
+    document.querySelectorAll('.tabbtn').forEach(function (btn) {
+      btn.classList.remove('active');
+    });
 
-  const crimeOk = crime && crime !== 'No Crime / Civil Only';
-  const relationshipOk = relationship && relationship !== 'None of the above' && relationship !== 'Unsure / Confirm';
-  const pcOk = pc === 'Yes';
+    var tab = document.getElementById(id);
+    if (tab) tab.classList.add('active');
 
-  if (!crime || !relationship || !pc) return 'unknown';
-  if (crimeOk && relationshipOk && pcOk) return 'yes';
-  if (!crimeOk || !relationshipOk || pc === 'No') return 'no';
-
-  return 'review';
-}
-
-function getRouting() {
-  const precinct = value('precinct');
-  const offenseLevel = value('offenseLevel');
-
-  let court = 'Not determined';
-  let citation = 'Not determined';
-  let eprosecutor = 'Not determined';
-  let reminders = [];
-
-  if (!precinct || !offenseLevel) return { court, citation, eprosecutor, reminders };
-
-  if (offenseLevel === 'Class B Misdemeanor') {
-    court = 'Holladay Justice Court';
-    citation = 'REQUIRED';
-    eprosecutor = 'Not required unless otherwise directed';
-    reminders.push('Millcreek/Holladay Class B DV: citation required.');
-    reminders.push('Complete DV Smartsheet referral.');
-    reminders.push('Submit/referral path should be Holladay Justice Court.');
-  } else if (offenseLevel === 'Class A Misdemeanor' || offenseLevel === 'Felony') {
-    court = 'Salt Lake District Court';
-    citation = 'Not required based on current process';
-    eprosecutor = 'REQUIRED';
-    reminders.push('Class A/Felony DV: submit through EProsecutor.');
-    reminders.push('Court path should be Salt Lake District Court.');
-  } else if (offenseLevel === 'Unknown / Pending Screening') {
-    court = 'Confirm after offense level is determined';
-    citation = 'Confirm if Class B / Holladay Justice Court applies';
-    eprosecutor = 'Confirm if Class A or Felony';
-    reminders.push('Pending screening: verify court, citation requirement, and EProsecutor requirement once offense level is known.');
+    var btn = document.querySelector('.tabbtn[data-tab="' + id + '"]');
+    if (btn) btn.classList.add('active');
   }
 
-  return { court, citation, eprosecutor, reminders };
-}
+  function dvApplies() {
+    var crime = value('qualCrime');
+    var relationship = value('relationship');
+    var pc = value('pc');
 
-function medicalIndicated(status) {
-  return ['Requested', 'EMS Responded', 'Transported', 'Refused Treatment'].includes(status);
-}
+    var crimeOk = crime && crime !== 'No Crime / Civil Only';
+    var relationshipOk = relationship && relationship !== 'None of the above' && relationship !== 'Unsure / Confirm';
+    var pcOk = pc === 'Yes';
 
-function lapThreshold() {
-  return value('lap14') === 'Yes' || value('lap511') === 'Yes';
-}
-
-function requiredForms() {
-  const forms = [
-    'DV/LAP Worksheet',
-    'No Contact Agreement',
-    'Jail Release Agreement if booked',
-    'DV Statement when available'
-  ];
-
-  const route = getRouting();
-
-  if (value('intimatePartner') === 'Yes') forms.push('UCJIS LAP entry / LAP supplement');
-  if (value('strangulation') === 'Yes') forms.push('Strangulation Supplement Form');
-
-  if (medicalIndicated(value('victimMedical')) || medicalIndicated(value('suspectMedical'))) {
-    forms.push('Medical Release / refusal documentation if applicable');
+    if (!crime || !relationship || !pc) return 'unknown';
+    if (crimeOk && relationshipOk && pcOk) return 'yes';
+    if (!crimeOk || !relationshipOk || pc === 'No') return 'no';
+    return 'review';
   }
 
-  if (route.citation === 'REQUIRED') forms.push('Citation');
+  function getRouting() {
+    var precinct = value('precinct');
+    var offenseLevel = value('offenseLevel');
 
-  if (value('offenseLevel') === 'Class B Misdemeanor') {
-    forms.push('DV Smartsheet');
-    forms.push('Holladay Justice Court referral');
+    var route = {
+      court: 'Not determined',
+      citation: 'Not determined',
+      eprosecutor: 'Not determined',
+      reminders: []
+    };
+
+    if (!precinct || !offenseLevel) return route;
+
+    if (offenseLevel === 'Class B Misdemeanor') {
+      route.court = 'Holladay Justice Court';
+      route.citation = 'REQUIRED';
+      route.eprosecutor = 'Not required unless otherwise directed';
+      route.reminders.push('Millcreek/Holladay Class B DV: citation required.');
+      route.reminders.push('Complete DV Smartsheet referral.');
+      route.reminders.push('Submit/referral path should be Holladay Justice Court.');
+    } else if (offenseLevel === 'Class A Misdemeanor' || offenseLevel === 'Felony') {
+      route.court = 'Salt Lake District Court';
+      route.citation = 'Not required based on current process';
+      route.eprosecutor = 'REQUIRED';
+      route.reminders.push('Class A/Felony DV: submit through EProsecutor.');
+      route.reminders.push('Court path should be Salt Lake District Court.');
+    } else if (offenseLevel === 'Unknown / Pending Screening') {
+      route.court = 'Confirm after offense level is determined';
+      route.citation = 'Confirm if Class B / Holladay Justice Court applies';
+      route.eprosecutor = 'Confirm if Class A or Felony';
+      route.reminders.push('Pending screening: verify court, citation requirement, and EProsecutor requirement once offense level is known.');
+    }
+
+    return route;
   }
 
-  if (route.eprosecutor === 'REQUIRED') forms.push('EProsecutor submission');
-
-  if (value('offenseLevel') === 'Class A Misdemeanor' || value('offenseLevel') === 'Felony') {
-    forms.push('Salt Lake District Court filing');
+  function medicalIndicated(status) {
+    return ['Requested', 'EMS Responded', 'Transported', 'Refused Treatment'].indexOf(status) !== -1;
   }
 
-  return forms;
-}
-
-function validationWarnings() {
-  const warnings = [];
-  const route = getRouting();
-
-  if (dvApplies() === 'yes') {
-    if (!isChecked('Victim advocate offered')) warnings.push('Victim advocate is not marked offered.');
-    if (!isChecked('LAP/DV worksheet completed')) warnings.push('LAP/DV worksheet is not marked complete.');
-    if (!isChecked('No Contact Agreement completed')) warnings.push('No Contact Agreement is not marked complete.');
-    if (!isChecked('Mandatory arrest/citation action completed if PC existed')) warnings.push('Mandatory arrest/citation action is not marked complete.');
+  function lapThreshold() {
+    return value('lap14') === 'Yes' || value('lap511') === 'Yes';
   }
 
-  if (value('childrenPresent') === 'Yes') warnings.push('Children present selected: verify children are documented/listed where required.');
-  if (value('orderStatus') === 'Unserved order') warnings.push('Unserved order selected: consider service if suspect is still on scene.');
+  function requiredForms() {
+    var forms = [
+      'DV/LAP Worksheet',
+      'No Contact Agreement',
+      'Jail Release Agreement if booked',
+      'DV Statement when available'
+    ];
 
-  if (value('injury') === 'Yes') {
-    if (!isChecked('Injury photos taken')) warnings.push('Injury claimed/observed but injury photos are not marked complete.');
-    if (!isChecked('Area of claimed injury photographed even if no visible injury')) warnings.push('Claimed injury area photo is not marked complete.');
+    var route = getRouting();
+
+    if (value('intimatePartner') === 'Yes') forms.push('UCJIS LAP entry / LAP supplement');
+    if (value('strangulation') === 'Yes') forms.push('Strangulation Supplement Form');
+
+    if (medicalIndicated(value('victimMedical')) || medicalIndicated(value('suspectMedical'))) {
+      forms.push('Medical Release / refusal documentation if applicable');
+    }
+
+    if (route.citation === 'REQUIRED') forms.push('Citation');
+
+    if (value('offenseLevel') === 'Class B Misdemeanor') {
+      forms.push('DV Smartsheet');
+      forms.push('Holladay Justice Court referral');
+    }
+
+    if (route.eprosecutor === 'REQUIRED') forms.push('EProsecutor submission');
+
+    if (value('offenseLevel') === 'Class A Misdemeanor' || value('offenseLevel') === 'Felony') {
+      forms.push('Salt Lake District Court filing');
+    }
+
+    return forms;
   }
 
-  if (value('propertyDamage') === 'Yes' && !isChecked('Property damage photographed')) {
-    warnings.push('Property damage selected but property damage photos are not marked complete.');
+  function validationWarnings() {
+    var warnings = [];
+    var route = getRouting();
+
+    if (dvApplies() === 'yes') {
+      if (!isChecked('Victim advocate offered')) warnings.push('Victim advocate is not marked offered.');
+      if (!isChecked('LAP/DV worksheet completed')) warnings.push('LAP/DV worksheet is not marked complete.');
+      if (!isChecked('No Contact Agreement completed')) warnings.push('No Contact Agreement is not marked complete.');
+      if (!isChecked('Mandatory arrest/citation action completed if PC existed')) warnings.push('Mandatory arrest/citation action is not marked complete.');
+    }
+
+    if (value('childrenPresent') === 'Yes') warnings.push('Children present selected: verify children are documented/listed where required.');
+    if (value('orderStatus') === 'Unserved order') warnings.push('Unserved order selected: consider service if suspect is still on scene.');
+
+    if (value('injury') === 'Yes') {
+      if (!isChecked('Injury photos taken')) warnings.push('Injury claimed/observed but injury photos are not marked complete.');
+      if (!isChecked('Area of claimed injury photographed even if no visible injury')) warnings.push('Claimed injury area photo is not marked complete.');
+    }
+
+    if (value('propertyDamage') === 'Yes' && !isChecked('Property damage photographed')) {
+      warnings.push('Property damage selected but property damage photos are not marked complete.');
+    }
+
+    if (value('intimatePartner') === 'Yes' && !isChecked('UCJIS LAP entry completed if intimate partners')) {
+      warnings.push('Intimate partner selected but UCJIS LAP entry is not marked complete.');
+    }
+
+    if (lapThreshold()) warnings.push('LAP threshold selected: verify advocate/supervisor notification per current process.');
+
+    if (value('strangulation') === 'Yes') {
+      if (!isChecked('Strangulation form completed if applicable')) warnings.push('Strangulation alleged but strangulation form is not marked complete.');
+      if (!isChecked('Strangulation exam offered if within five days')) warnings.push('Strangulation alleged but forensic exam offer is not marked complete.');
+    }
+
+    if ((medicalIndicated(value('victimMedical')) || medicalIndicated(value('suspectMedical'))) && !isChecked('Medical release completed if applicable')) {
+      warnings.push('Medical response indicated but medical release/refusal documentation is not marked complete.');
+    }
+
+    if (route.citation === 'REQUIRED' && !isChecked('Citation issued if required for Millcreek/Holladay Class B')) {
+      warnings.push('Citation required for this routing but not marked complete.');
+    }
+
+    if (value('precinct') && value('offenseLevel') === 'Class B Misdemeanor' && !isChecked('DV Smartsheet completed if applicable')) {
+      warnings.push('Class B Millcreek/Holladay case selected but DV Smartsheet is not marked complete.');
+    }
+
+    if (route.eprosecutor === 'REQUIRED' && !isChecked('EProsecutor submission completed if required')) {
+      warnings.push('EProsecutor required but not marked complete.');
+    }
+
+    if ((value('offenseLevel') === 'Class A Misdemeanor' || value('offenseLevel') === 'Felony') && !isChecked('Salt Lake District Court filing completed for Class A or Felony DV')) {
+      warnings.push('Salt Lake District Court filing required for Class A/Felony DV but not marked complete.');
+    }
+
+    if (!isChecked('BWC active or reason documented')) warnings.push('BWC active/reason is not marked complete.');
+    if (!isChecked('Evidence.com photos uploaded and tagged correctly')) warnings.push('Evidence.com upload/tagging is not marked complete.');
+
+    return warnings;
   }
 
-  if (value('intimatePartner') === 'Yes' && !isChecked('UCJIS LAP entry completed if intimate partners')) {
-    warnings.push('Intimate partner selected but UCJIS LAP entry is not marked complete.');
+  function calculateProgress() {
+    var checks = allChecks();
+    var total = checks.length;
+    var done = checks.filter(function (check) { return check.checked; }).length;
+
+    var answeredFields = [
+      'caseNumber','officer','precinct','qualCrime','relationship','pc',
+      'childrenPresent','pregnant','orderStatus','injury','propertyDamage',
+      'victimStatement','witnessStatement','intimatePartner','advocateResult',
+      'lap14','lap511','strangulation','victimMedical','suspectMedical',
+      'offenseLevel','enforcement'
+    ];
+
+    answeredFields.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      total += 1;
+      if (el.value && String(el.value).trim() !== '') done += 1;
+    });
+
+    var percent = total ? Math.round((done / total) * 100) : 0;
+    return { total: total, done: done, percent: percent };
   }
 
-  if (lapThreshold()) warnings.push('LAP threshold selected: verify advocate/supervisor notification per current process.');
+  function updateSmartSheetShortcut() {
+    var shortcut = document.getElementById('smartSheetShortcut');
+    if (!shortcut) return;
 
-  if (value('strangulation') === 'Yes') {
-    if (!isChecked('Strangulation form completed if applicable')) warnings.push('Strangulation alleged but strangulation form is not marked complete.');
-    if (!isChecked('Strangulation exam offered if within five days')) warnings.push('Strangulation alleged but forensic exam offer is not marked complete.');
-  }
+    var precinct = value('precinct');
+    var offenseLevel = value('offenseLevel');
 
-  if ((medicalIndicated(value('victimMedical')) || medicalIndicated(value('suspectMedical'))) && !isChecked('Medical release completed if applicable')) {
-    warnings.push('Medical response indicated but medical release/refusal documentation is not marked complete.');
-  }
+    if (offenseLevel !== 'Class B Misdemeanor') {
+      shortcut.classList.add('hidden');
+      shortcut.innerHTML = '';
+      return;
+    }
 
-  if (route.citation === 'REQUIRED' && !isChecked('Citation issued if required, specifically Holladay / Millcreek Class B') && !isChecked('Citation issued if required for Millcreek/Holladay Class B')) {
-    warnings.push('Citation required for this routing but not marked complete.');
-  }
+    if (precinct === 'Millcreek') {
+      shortcut.classList.remove('hidden');
+      shortcut.innerHTML =
+        '<strong>DV Smartsheet Required</strong><br>' +
+        '<a class="resource-link" target="_blank" rel="noopener noreferrer" href="https://app.smartsheet.com/b/form/496bef27ca3b4a689bd1f75bbd2a509c">Open Millcreek DV Smartsheet</a>';
+      return;
+    }
 
-  if (value('precinct') && value('offenseLevel') === 'Class B Misdemeanor' && !isChecked('DV Smartsheet completed if applicable')) {
-    warnings.push('Class B Millcreek/Holladay case selected but DV Smartsheet is not marked complete.');
-  }
+    if (precinct === 'Holladay') {
+      shortcut.classList.remove('hidden');
+      shortcut.innerHTML =
+        '<strong>DV Smartsheet Required</strong><br>' +
+        '<a class="resource-link" target="_blank" rel="noopener noreferrer" href="https://app.smartsheet.com/b/publish?EQBCT=f39ca08be59e46cea8e53b16143be465">Open Holladay DV Smartsheet</a>';
+      return;
+    }
 
-  if (route.eprosecutor === 'REQUIRED' && !isChecked('EProsecutor submission completed if required')) {
-    warnings.push('EProsecutor required but not marked complete.');
-  }
-
-  if ((value('offenseLevel') === 'Class A Misdemeanor' || value('offenseLevel') === 'Felony') && !isChecked('Salt Lake District Court filing completed for Class A or Felony DV')) {
-    warnings.push('Salt Lake District Court filing required for Class A/Felony DV but not marked complete.');
-  }
-
-  if (!isChecked('BWC active or reason documented')) warnings.push('BWC active/reason is not marked complete.');
-  if (!isChecked('Evidence.com photos uploaded and tagged correctly')) warnings.push('Evidence.com upload/tagging is not marked complete.');
-
-  return warnings;
-}
-
-function calculateProgress() {
-  const checks = allChecks();
-  let total = checks.length;
-  let done = checks.filter(check => check.checked).length;
-
-  const answeredFields = [
-    'caseNumber', 'officer', 'precinct', 'qualCrime', 'relationship', 'pc',
-    'childrenPresent', 'pregnant', 'orderStatus', 'injury', 'propertyDamage',
-    'victimStatement', 'witnessStatement', 'intimatePartner', 'advocateResult',
-    'lap14', 'lap511', 'strangulation', 'victimMedical', 'suspectMedical',
-    'offenseLevel', 'enforcement'
-  ];
-
-  answeredFields.forEach(id => {
-    const element = document.getElementById(id);
-    if (!element) return;
-
-    total += 1;
-    if (element.value && element.value.trim() !== '') done += 1;
-  });
-
-  const percent = total ? Math.round(done / total * 100) : 0;
-  return { total, done, percent };
-}
-
-function updateSmartSheetShortcut() {
-  const shortcut = document.getElementById('smartSheetShortcut');
-  if (!shortcut) return;
-
-  const precinct = value('precinct');
-  const offenseLevel = value('offenseLevel');
-
-  if (offenseLevel !== 'Class B Misdemeanor') {
     shortcut.classList.add('hidden');
     shortcut.innerHTML = '';
-    return;
   }
 
-  if (precinct === 'Millcreek') {
-    shortcut.classList.remove('hidden');
-    shortcut.innerHTML = `
-      <strong>DV Smartsheet Required</strong><br>
-      <a class="resource-link" target="_blank" rel="noopener noreferrer" href="https://app.smartsheet.com/b/form/496bef27ca3b4a689bd1f75bbd2a509c">
-        Open Millcreek DV Smartsheet
-      </a>
-    `;
-    return;
-  }
+  function updateDVResult() {
+    var box = document.getElementById('dvResult');
+    if (!box) return;
 
-  if (precinct === 'Holladay') {
-    shortcut.classList.remove('hidden');
-    shortcut.innerHTML = `
-      <strong>DV Smartsheet Required</strong><br>
-      <a class="resource-link" target="_blank" rel="noopener noreferrer" href="https://app.smartsheet.com/b/publish?EQBCT=f39ca08be59e46cea8e53b16143be465">
-        Open Holladay DV Smartsheet
-      </a>
-    `;
-    return;
-  }
+    var result = dvApplies();
 
-  shortcut.classList.add('hidden');
-  shortcut.innerHTML = '';
-}
-
-function updateAll() {
-  const dvResult = document.getElementById('dvResult');
-  const dv = dvApplies();
-
-  if (dvResult) {
-    if (dv === 'yes') {
-      dvResult.className = 'result ok';
-      dvResult.textContent = 'DV Process Applies — continue through the DV workflow.';
-    } else if (dv === 'no') {
-      dvResult.className = 'result bad';
-      dvResult.textContent = 'DV process does not appear to apply based on selected answers. Handle underlying crime/civil issue as appropriate.';
-    } else if (dv === 'review') {
-      dvResult.className = 'result warn';
-      dvResult.textContent = 'Review needed — facts may support further investigation or supervisor/DV detective consult.';
+    if (result === 'yes') {
+      box.className = 'result ok';
+      box.textContent = 'DV Process Applies — continue through the DV workflow.';
+    } else if (result === 'no') {
+      box.className = 'result bad';
+      box.textContent = 'DV process does not appear to apply based on selected answers. Handle underlying crime/civil issue as appropriate.';
+    } else if (result === 'review') {
+      box.className = 'result warn';
+      box.textContent = 'Review needed — facts may support further investigation or supervisor/DV detective consult.';
     } else {
-      dvResult.className = 'result muted';
-      dvResult.textContent = 'Select crime, relationship, and PC to determine whether DV process applies.';
+      box.className = 'result muted';
+      box.textContent = 'Select crime, relationship, and PC to determine whether DV process applies.';
     }
   }
 
-  const childrenWarn = document.getElementById('childrenWarn');
-  if (childrenWarn) childrenWarn.classList.toggle('hidden', value('childrenPresent') !== 'Yes');
+  function updateConditionalDisplays() {
+    var childrenWarn = document.getElementById('childrenWarn');
+    if (childrenWarn) childrenWarn.classList.toggle('hidden', value('childrenPresent') !== 'Yes');
 
-  const orderWarn = document.getElementById('orderWarn');
-  if (orderWarn) orderWarn.classList.toggle('hidden', value('orderStatus') !== 'Unserved order');
+    var orderWarn = document.getElementById('orderWarn');
+    if (orderWarn) orderWarn.classList.toggle('hidden', value('orderStatus') !== 'Unserved order');
 
-  const photoReq = document.getElementById('photoReq');
-  if (photoReq) photoReq.classList.toggle('hidden', value('injury') !== 'Yes');
+    var photoReq = document.getElementById('photoReq');
+    if (photoReq) photoReq.classList.toggle('hidden', value('injury') !== 'Yes');
 
-  const propertyReq = document.getElementById('propertyReq');
-  if (propertyReq) propertyReq.classList.toggle('hidden', value('propertyDamage') !== 'Yes');
+    var propertyReq = document.getElementById('propertyReq');
+    if (propertyReq) propertyReq.classList.toggle('hidden', value('propertyDamage') !== 'Yes');
 
-  const strangulationReq = document.getElementById('strangulationReq');
-  if (strangulationReq) strangulationReq.classList.toggle('hidden', value('strangulation') !== 'Yes');
+    var strangulationReq = document.getElementById('strangulationReq');
+    if (strangulationReq) strangulationReq.classList.toggle('hidden', value('strangulation') !== 'Yes');
 
-  const medicalWarn = document.getElementById('medicalWarn');
-  if (medicalWarn) medicalWarn.classList.toggle('hidden', !(medicalIndicated(value('victimMedical')) || medicalIndicated(value('suspectMedical'))));
+    var medicalWarn = document.getElementById('medicalWarn');
+    if (medicalWarn) medicalWarn.classList.toggle('hidden', !(medicalIndicated(value('victimMedical')) || medicalIndicated(value('suspectMedical'))));
 
-  const ywcaWarn = document.getElementById('ywcaWarn');
-  if (ywcaWarn) ywcaWarn.classList.toggle('hidden', !lapThreshold());
+    var ywcaWarn = document.getElementById('ywcaWarn');
+    if (ywcaWarn) ywcaWarn.classList.toggle('hidden', !lapThreshold());
 
-  const lapGuidance = document.getElementById('lapGuidance');
-  if (lapGuidance) {
-    if (value('intimatePartner') === 'Yes') {
-      lapGuidance.className = 'result warn';
-      lapGuidance.textContent = 'Intimate partner: LAP/DV worksheet required and UCJIS LAP entry required when criminal DV applies.';
-    } else if (value('intimatePartner') === 'No') {
-      lapGuidance.className = 'result muted';
-      lapGuidance.textContent = 'Non-intimate partner: LAP/DV worksheet still completed on criminal DV; UCJIS LAP entry generally not required.';
-    } else {
-      lapGuidance.className = 'result muted';
-      lapGuidance.textContent = 'Select intimate partner status.';
+    var lapGuidance = document.getElementById('lapGuidance');
+    if (lapGuidance) {
+      if (value('intimatePartner') === 'Yes') {
+        lapGuidance.className = 'result warn';
+        lapGuidance.textContent = 'Intimate partner: LAP/DV worksheet required and UCJIS LAP entry required when criminal DV applies.';
+      } else if (value('intimatePartner') === 'No') {
+        lapGuidance.className = 'result muted';
+        lapGuidance.textContent = 'Non-intimate partner: LAP/DV worksheet still completed on criminal DV; UCJIS LAP entry generally not required.';
+      } else {
+        lapGuidance.className = 'result muted';
+        lapGuidance.textContent = 'Select intimate partner status.';
+      }
     }
   }
 
-  const route = getRouting();
-  const routingPanel = document.getElementById('routingPanel');
-  if (routingPanel) {
-    routingPanel.className = route.citation === 'REQUIRED' || route.eprosecutor === 'REQUIRED' ? 'result warn' : 'result ok';
-    routingPanel.innerHTML = `
-      <strong>Court / Submission:</strong> ${route.court}<br>
-      <strong>Citation:</strong> ${route.citation}<br>
-      <strong>EProsecutor:</strong> ${route.eprosecutor}<br>
-      ${route.reminders.map(reminder => '• ' + reminder).join('<br>')}
-    `;
+  function updateRoutingPanel() {
+    var panel = document.getElementById('routingPanel');
+    if (!panel) return;
+
+    var route = getRouting();
+
+    panel.className = route.citation === 'REQUIRED' || route.eprosecutor === 'REQUIRED' ? 'result warn' : 'result ok';
+    panel.innerHTML =
+      '<strong>Court / Submission:</strong> ' + route.court + '<br>' +
+      '<strong>Citation:</strong> ' + route.citation + '<br>' +
+      '<strong>EProsecutor:</strong> ' + route.eprosecutor + '<br>' +
+      route.reminders.map(function (r) { return '• ' + r; }).join('<br>');
   }
 
-  updateSmartSheetShortcut();
+  function updateProgress() {
+    var progress = calculateProgress();
+    var bar = document.getElementById('barFill');
+    var text = document.getElementById('progressText');
 
-  const progress = calculateProgress();
-  const bar = document.getElementById('barFill');
-  const progressText = document.getElementById('progressText');
+    if (bar) bar.style.width = progress.percent + '%';
+    if (text) text.textContent = 'Checklist completion: ' + progress.percent + '% (' + progress.done + '/' + progress.total + ')';
+  }
 
-  if (bar) bar.style.width = progress.percent + '%';
-  if (progressText) progressText.textContent = `Checklist completion: ${progress.percent}% (${progress.done}/${progress.total})`;
+  function renderReview() {
+    var warnings = validationWarnings();
+    var forms = requiredForms();
 
-  renderReview(false);
-}
+    var compliance = document.getElementById('complianceBox');
+    if (compliance) {
+      if (warnings.length) {
+        compliance.className = 'result bad';
+        compliance.innerHTML = '<strong>Missing / Review Items:</strong><br>' + warnings.map(function (w) { return '⚠ ' + w; }).join('<br>');
+      } else {
+        compliance.className = 'result ok';
+        compliance.textContent = 'No validation warnings generated based on selected answers.';
+      }
+    }
 
-function renderReview() {
-  const warnings = validationWarnings();
-  const forms = requiredForms();
-  const complianceBox = document.getElementById('complianceBox');
-
-  if (complianceBox) {
-    if (warnings.length) {
-      complianceBox.className = 'result bad';
-      complianceBox.innerHTML = '<strong>Missing / Review Items:</strong><br>' + warnings.map(w => '⚠ ' + w).join('<br>');
-    } else {
-      complianceBox.className = 'result ok';
-      complianceBox.textContent = 'No validation warnings generated based on selected answers.';
+    var required = document.getElementById('requiredForms');
+    if (required) {
+      required.innerHTML = '<strong>Likely Required Forms / Actions:</strong><br>' +
+        forms.map(function (f) { return '<div class="listline">• ' + f + '</div>'; }).join('');
     }
   }
 
-  const requiredFormsBox = document.getElementById('requiredForms');
-  if (requiredFormsBox) {
-    requiredFormsBox.innerHTML =
-      '<strong>Likely Required Forms / Actions:</strong><br>' +
-      forms.map(form => `<div class="listline">• ${form}</div>`).join('');
+  function updateAll() {
+    updateDVResult();
+    updateConditionalDisplays();
+    updateRoutingPanel();
+    updateSmartSheetShortcut();
+    updateProgress();
+    renderReview();
   }
-}
 
-function generateSummary() {
-  try {
+  function buildSummary() {
+    var route = getRouting();
+    var warnings = validationWarnings();
+    var forms = requiredForms();
+    var completed = allChecks().filter(function (check) { return check.checked; }).map(function (check) { return '✓ ' + check.dataset.item; });
+    var missing = allChecks().filter(function (check) { return !check.checked; }).map(function (check) { return '☐ ' + check.dataset.item; });
+
+    return 'DV INVESTIGATION CHECKLIST SUMMARY\n\n' +
+      'Case Number: ' + (value('caseNumber') || 'Not entered') + '\n' +
+      'Officer/User: ' + (value('officer') || 'Not entered') + '\n' +
+      'Precinct: ' + (value('precinct') || 'Not selected') + '\n' +
+      'Date Generated: ' + new Date().toLocaleString() + '\n\n' +
+      'DV QUALIFICATION:\n' +
+      'Crime: ' + (value('qualCrime') || 'Not selected') + '\n' +
+      'Relationship: ' + (value('relationship') || 'Not selected') + '\n' +
+      'Probable Cause: ' + (value('pc') || 'Not selected') + '\n' +
+      'DV Result: ' + (document.getElementById('dvResult') ? document.getElementById('dvResult').textContent : 'Not generated') + '\n\n' +
+      'COURT ROUTING:\n' +
+      'Offense Level: ' + (value('offenseLevel') || 'Not selected') + '\n' +
+      'Court / Submission: ' + route.court + '\n' +
+      'Citation: ' + route.citation + '\n' +
+      'EProsecutor: ' + route.eprosecutor + '\n' +
+      'Routing Reminders:\n' + (route.reminders.length ? route.reminders.map(function (r) { return '• ' + r; }).join('\n') : 'None') + '\n\n' +
+      'SPECIAL FACTORS:\n' +
+      'Children Present: ' + (value('childrenPresent') || 'Not selected') + '\n' +
+      'Pregnant Victim: ' + (value('pregnant') || 'Not selected') + '\n' +
+      'Order Status: ' + (value('orderStatus') || 'Not selected') + '\n' +
+      'Intimate Partners: ' + (value('intimatePartner') || 'Not selected') + '\n' +
+      'LAP 1-4 Any Yes: ' + (value('lap14') || 'Not selected') + '\n' +
+      'LAP 5-11 Four or More Yes: ' + (value('lap511') || 'Not selected') + '\n' +
+      'Strangulation: ' + (value('strangulation') || 'Not selected') + '\n' +
+      'Victim Medical: ' + (value('victimMedical') || 'Not selected') + ' / ' + (value('victimMedicalCase') || 'No case #') + '\n' +
+      'Suspect Medical: ' + (value('suspectMedical') || 'Not selected') + ' / ' + (value('suspectMedicalCase') || 'No case #') + '\n\n' +
+      'LIKELY REQUIRED FORMS / ACTIONS:\n' + (forms.length ? forms.map(function (f) { return '• ' + f; }).join('\n') : 'None') + '\n\n' +
+      'VALIDATION WARNINGS:\n' + (warnings.length ? warnings.map(function (w) { return '⚠ ' + w; }).join('\n') : 'None') + '\n\n' +
+      'COMPLETED ITEMS:\n' + (completed.length ? completed.join('\n') : 'None marked complete') + '\n\n' +
+      'NOT MARKED COMPLETE:\n' + (missing.length ? missing.join('\n') : 'None') + '\n\n' +
+      'STATEMENT NOTES:\n' + (value('statementNotes') || 'None') + '\n\n' +
+      'FOLLOW-UP NOTES:\n' + (value('notes') || 'None') + '\n\n' +
+      'REMINDER:\nThis checklist is a process aid only. Verify current law, policy, forms, court routing, supervisor guidance, and DV detective guidance.';
+  }
+
+  function generateSummary() {
     updateAll();
 
-    const route = getRouting();
-    const warnings = validationWarnings();
-    const forms = requiredForms();
-    const completed = allChecks().filter(check => check.checked).map(check => '✓ ' + check.dataset.item);
-    const missing = allChecks().filter(check => !check.checked).map(check => '☐ ' + check.dataset.item);
+    var summary = buildSummary();
+    var output = document.getElementById('summaryOutput');
 
-    const summary =
-`DV INVESTIGATION CHECKLIST SUMMARY
-
-Case Number: ${value('caseNumber') || 'Not entered'}
-Officer/User: ${value('officer') || 'Not entered'}
-Precinct: ${value('precinct') || 'Not selected'}
-Date Generated: ${new Date().toLocaleString()}
-
-DV QUALIFICATION:
-Crime: ${value('qualCrime') || 'Not selected'}
-Relationship: ${value('relationship') || 'Not selected'}
-Probable Cause: ${value('pc') || 'Not selected'}
-DV Result: ${document.getElementById('dvResult') ? document.getElementById('dvResult').textContent : 'Not generated'}
-
-COURT ROUTING:
-Offense Level: ${value('offenseLevel') || 'Not selected'}
-Court / Submission: ${route.court}
-Citation: ${route.citation}
-EProsecutor: ${route.eprosecutor}
-Routing Reminders:
-${route.reminders.length ? route.reminders.map(reminder => '• ' + reminder).join('
-') : 'None'}
-
-SPECIAL FACTORS:
-Children Present: ${value('childrenPresent') || 'Not selected'}
-Pregnant Victim: ${value('pregnant') || 'Not selected'}
-Order Status: ${value('orderStatus') || 'Not selected'}
-Intimate Partners: ${value('intimatePartner') || 'Not selected'}
-LAP 1-4 Any Yes: ${value('lap14') || 'Not selected'}
-LAP 5-11 Four or More Yes: ${value('lap511') || 'Not selected'}
-Strangulation: ${value('strangulation') || 'Not selected'}
-Victim Medical: ${value('victimMedical') || 'Not selected'} / ${value('victimMedicalCase') || 'No case #'}
-Suspect Medical: ${value('suspectMedical') || 'Not selected'} / ${value('suspectMedicalCase') || 'No case #'}
-
-LIKELY REQUIRED FORMS / ACTIONS:
-${forms.length ? forms.map(form => '• ' + form).join('
-') : 'None generated'}
-
-VALIDATION WARNINGS:
-${warnings.length ? warnings.map(warning => '⚠ ' + warning).join('
-') : 'None'}
-
-COMPLETED ITEMS:
-${completed.length ? completed.join('
-') : 'None marked complete'}
-
-NOT MARKED COMPLETE:
-${missing.length ? missing.join('
-') : 'None'}
-
-STATEMENT NOTES:
-${value('statementNotes') || 'None'}
-
-FOLLOW-UP NOTES:
-${value('notes') || 'None'}
-
-REMINDER:
-This checklist is a process aid only. Verify current law, policy, forms, court routing, supervisor guidance, and DV detective guidance.`;
-
-    const output = document.getElementById('summaryOutput');
     if (output) {
       output.textContent = summary;
       output.style.display = 'block';
@@ -976,106 +1233,121 @@ This checklist is a process aid only. Verify current law, policy, forms, court r
     }
 
     return summary;
-  } catch (error) {
-    alert('Summary could not be generated. Error: ' + error.message);
-    return '';
   }
-}
 
-async function copySummary() {
-  const summary = generateSummary();
-  if (!summary) return;
+  function copySummary() {
+    var summary = generateSummary();
 
-  try {
     if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(summary);
+      navigator.clipboard.writeText(summary).then(function () {
+        alert('Summary copied.');
+      }).catch(function () {
+        fallbackCopy(summary);
+      });
+    } else {
+      fallbackCopy(summary);
+    }
+  }
+
+  function fallbackCopy(text) {
+    var temp = document.createElement('textarea');
+    temp.value = text;
+    temp.setAttribute('readonly', '');
+    temp.style.position = 'fixed';
+    temp.style.top = '-1000px';
+    document.body.appendChild(temp);
+    temp.select();
+    temp.setSelectionRange(0, 999999);
+
+    try {
+      document.execCommand('copy');
       alert('Summary copied.');
+    } catch (e) {
+      alert('Copy failed. The summary is displayed on screen. Select and copy it manually.');
+    }
+
+    document.body.removeChild(temp);
+  }
+
+  function emailSummary() {
+    var summary = generateSummary();
+    fallbackCopy(summary);
+
+    var route = getRouting();
+    var warnings = validationWarnings();
+
+    if (warnings.length && !confirm('There are ' + warnings.length + ' validation warning(s). Continue and open email anyway?')) {
       return;
     }
-  } catch (error) {}
 
-  const temp = document.createElement('textarea');
-  temp.value = summary;
-  temp.setAttribute('readonly', '');
-  temp.style.position = 'fixed';
-  temp.style.top = '-1000px';
-  document.body.appendChild(temp);
-  temp.select();
-  temp.setSelectionRange(0, 999999);
+    var body =
+      'DV Checklist Summary\n\n' +
+      'Case Number: ' + (value('caseNumber') || 'Not entered') + '\n' +
+      'Officer/User: ' + (value('officer') || 'Not entered') + '\n' +
+      'Precinct: ' + (value('precinct') || 'Not selected') + '\n' +
+      'Offense Level: ' + (value('offenseLevel') || 'Not selected') + '\n\n' +
+      'Court / Submission: ' + route.court + '\n' +
+      'Citation: ' + route.citation + '\n' +
+      'EProsecutor: ' + route.eprosecutor + '\n\n' +
+      'Validation Warnings:\n' + (warnings.length ? warnings.map(function (w) { return '⚠ ' + w; }).join('\n') : 'None') + '\n\n' +
+      'Full checklist summary was generated in the app and copied to clipboard. Paste below if needed.';
 
-  try {
-    document.execCommand('copy');
-    alert('Summary copied.');
-  } catch (error) {
-    alert('Copy failed. The summary is displayed on screen. Select and copy it manually.');
+    var to = value('email');
+    var subject = 'DV Checklist Summary - ' + (value('caseNumber') || 'Case Number Needed');
+    var mailto = 'mailto:' + encodeURIComponent(to) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+
+    window.location.href = mailto;
+
+    setTimeout(function () {
+      alert('If email did not open, use Copy Summary and paste into an email manually. Some phones block email links from local HTML files.');
+    }, 900);
   }
 
-  document.body.removeChild(temp);
-}
+  function clearForm() {
+    if (!confirm('Clear all form data from this page?')) return;
 
-function emailSummary() {
-  const summary = generateSummary();
-  if (!summary) return;
+    document.querySelectorAll('input, select, textarea').forEach(function (el) {
+      if (el.type === 'checkbox') el.checked = false;
+      else el.value = '';
+    });
 
-  const warnings = validationWarnings();
-  const route = getRouting();
+    var output = document.getElementById('summaryOutput');
+    if (output) {
+      output.style.display = 'none';
+      output.textContent = '';
+    }
 
-  if (warnings.length && !confirm(`There are ${warnings.length} validation warning(s). Continue and open email anyway?`)) return;
+    updateAll();
+  }
 
-  const shortBody =
-`DV Checklist Summary
+  function wireEvents() {
+    document.querySelectorAll('.tabbtn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        showTab(btn.getAttribute('data-tab'));
+      });
+    });
 
-Case Number: ${value('caseNumber') || 'Not entered'}
-Officer/User: ${value('officer') || 'Not entered'}
-Precinct: ${value('precinct') || 'Not selected'}
-Offense Level: ${value('offenseLevel') || 'Not selected'}
+    document.getElementById('dayModeBtn').addEventListener('click', function () { setMode('day'); });
+    document.getElementById('nightModeBtn').addEventListener('click', function () { setMode('night'); });
 
-Court / Submission: ${route.court}
-Citation: ${route.citation}
-EProsecutor: ${route.eprosecutor}
+    document.getElementById('generateBtn').addEventListener('click', generateSummary);
+    document.getElementById('copyBtn').addEventListener('click', copySummary);
+    document.getElementById('emailBtn').addEventListener('click', emailSummary);
+    document.getElementById('clearBtn').addEventListener('click', clearForm);
 
-Validation Warnings:
-${warnings.length ? warnings.map(w => '⚠ ' + w).join('
-') : 'None'}
+    var refresh = document.getElementById('refreshReviewBtn');
+    if (refresh) refresh.addEventListener('click', renderReview);
 
-Full checklist summary was generated in the app. Use Copy Summary and paste the full summary below if needed.
-`;
+    document.addEventListener('change', updateAll);
+    document.addEventListener('input', updateAll);
+  }
 
-  const to = value('email');
-  const subject = 'DV Checklist Summary - ' + (value('caseNumber') || 'Case Number Needed');
-  const mailto = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(shortBody)}`;
-
-  window.location.href = mailto;
-
-  setTimeout(function () {
-    alert('If your email app did not open, use Copy Summary and paste it into an email manually. Some phones block email links from local HTML files.');
-  }, 900);
-}
-
-function clearForm() {
-  if (!confirm('Clear all form data from this page?')) return;
-
-  document.querySelectorAll('input, select, textarea').forEach(element => {
-    if (element.type === 'checkbox') element.checked = false;
-    else element.value = '';
+  document.addEventListener('DOMContentLoaded', function () {
+    loadMode();
+    wireEvents();
+    updateAll();
   });
-
-  const output = document.getElementById('summaryOutput');
-  if (output) {
-    output.style.display = 'none';
-    output.textContent = '';
-  }
-
-  updateAll();
-}
-
-document.addEventListener('change', updateAll);
-document.addEventListener('input', updateAll);
-
-document.addEventListener('DOMContentLoaded', function () {
-  initializeDisplayMode();
-  updateAll();
-});
+})();
 </script>
 </body>
 </html>
