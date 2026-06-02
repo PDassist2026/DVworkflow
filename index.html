@@ -529,7 +529,7 @@
 
   <section class="tab active" style="display:block;background:white;border:1px solid var(--border);border-radius:14px;margin-top:12px;">
     <div class="content" style="font-size:.85rem;color:#475569;">
-      <strong>App Version:</strong> 1.6 | &nbsp;
+      <strong>App Version:</strong> 1.7 | &nbsp;
       <strong>Last Updated:</strong> June 2026 &nbsp; | &nbsp;
       <strong>Supported Precincts:</strong> Millcreek / Holladay only &nbsp; | &nbsp;
       <strong>Use:</strong> Generic field checklist and routing assistant. Not affiliated with or endorsed by any agency.
@@ -539,10 +539,10 @@
 </main>
 
 <div class="actions">
-  <button class="btn-blue" onclick="generateSummary()">Generate Summary</button>
-  <button class="btn-green" onclick="emailSummary()">Email to Officer</button>
-  <button class="btn-gray" onclick="copySummary()">Copy Summary</button>
-  <button class="btn-red" onclick="clearForm()">Clear Form</button>
+  <button type="button" class="btn-blue" onclick="generateSummary()">Generate Summary</button>
+  <button type="button" class="btn-green" onclick="emailSummary()">Email to Officer</button>
+  <button type="button" class="btn-gray" onclick="copySummary()">Copy Summary</button>
+  <button type="button" class="btn-red" onclick="clearForm()">Clear Form</button>
 </div>
 
 <script>
@@ -760,79 +760,170 @@ function renderReview(show=true){
   document.getElementById('requiredForms').innerHTML='<strong>Likely Required Forms / Actions:</strong><br>'+forms.map(f=>`<div class="listline">• ${f}</div>`).join('');
 }
 
-function generateSummary(){
-  updateAll();
-  const r=getRouting(), w=validationWarnings(), forms=requiredForms();
-  const completed=allChecks().filter(c=>c.checked).map(c=>'✓ '+c.dataset.item);
-  const missing=allChecks().filter(c=>!c.checked).map(c=>'☐ '+c.dataset.item);
-  const summary=`DV INVESTIGATION CHECKLIST SUMMARY
+function generateSummary() {
+  try {
+    updateAll();
 
-Case Number: ${value('caseNumber')||'Not entered'}
-Officer: ${value('officer')||'Not entered'}
-Precinct: ${value('precinct')||'Not selected'}
+    const route = getRouting();
+    const warnings = validationWarnings();
+    const forms = requiredForms();
+    const completed = allChecks().filter(check => check.checked).map(check => '✓ ' + check.dataset.item);
+    const missing = allChecks().filter(check => !check.checked).map(check => '☐ ' + check.dataset.item);
+
+    const summary =
+`DV INVESTIGATION CHECKLIST SUMMARY
+
+Case Number: ${value('caseNumber') || 'Not entered'}
+Officer/User: ${value('officer') || 'Not entered'}
+Precinct: ${value('precinct') || 'Not selected'}
 Date Generated: ${new Date().toLocaleString()}
 
 DV QUALIFICATION:
-Crime: ${value('qualCrime')||'Not selected'}
-Relationship: ${value('relationship')||'Not selected'}
-Probable Cause: ${value('pc')||'Not selected'}
-DV Result: ${document.getElementById('dvResult').textContent}
+Crime: ${value('qualCrime') || 'Not selected'}
+Relationship: ${value('relationship') || 'Not selected'}
+Probable Cause: ${value('pc') || 'Not selected'}
+DV Result: ${document.getElementById('dvResult') ? document.getElementById('dvResult').textContent : 'Not generated'}
 
 COURT ROUTING:
-Offense Level: ${value('offenseLevel')||'Not selected'}
-Court / Submission: ${r.court}
-Citation: ${r.citation}
-EProsecutor: ${r.epros}
+Offense Level: ${value('offenseLevel') || 'Not selected'}
+Court / Submission: ${route.court}
+Citation: ${route.citation}
+EProsecutor: ${route.eprosecutor}
 Routing Reminders:
-${r.reminders.length?r.reminders.map(x=>'• '+x).join('\n'):'None'}
+${route.reminders && route.reminders.length ? route.reminders.map(reminder => '• ' + reminder).join('\n') : 'None'}
 
 SPECIAL FACTORS:
-Children Present: ${value('childrenPresent')||'Not selected'}
-Pregnant Victim: ${value('pregnant')||'Not selected'}
-Order Status: ${value('orderStatus')||'Not selected'}
-Intimate Partners: ${value('intimatePartner')||'Not selected'}
-LAP 1-4 Any Yes: ${value('lap14')||'Not selected'}
-LAP 5-11 Four or More Yes: ${value('lap511')||'Not selected'}
-Strangulation: ${value('strangulation')||'Not selected'}
-Victim Medical: ${value('victimMedical')||'Not selected'} / ${value('victimMedicalCase')||'No case #'}
-Suspect Medical: ${value('suspectMedical')||'Not selected'} / ${value('suspectMedicalCase')||'No case #'}
+Children Present: ${value('childrenPresent') || 'Not selected'}
+Pregnant Victim: ${value('pregnant') || 'Not selected'}
+Order Status: ${value('orderStatus') || 'Not selected'}
+Intimate Partners: ${value('intimatePartner') || 'Not selected'}
+LAP 1-4 Any Yes: ${value('lap14') || 'Not selected'}
+LAP 5-11 Four or More Yes: ${value('lap511') || 'Not selected'}
+Strangulation: ${value('strangulation') || 'Not selected'}
+Victim Medical: ${value('victimMedical') || 'Not selected'} / ${value('victimMedicalCase') || 'No case #'}
+Suspect Medical: ${value('suspectMedical') || 'Not selected'} / ${value('suspectMedicalCase') || 'No case #'}
 
 LIKELY REQUIRED FORMS / ACTIONS:
-${forms.map(f=>'• '+f).join('\n')}
+${forms.length ? forms.map(form => '• ' + form).join('\n') : 'None generated'}
 
 VALIDATION WARNINGS:
-${w.length?w.map(x=>'⚠ '+x).join('\n'):'None'}
+${warnings.length ? warnings.map(warning => '⚠ ' + warning).join('\n') : 'None'}
 
 COMPLETED ITEMS:
-${completed.length?completed.join('\n'):'None marked complete'}
+${completed.length ? completed.join('\n') : 'None marked complete'}
 
 NOT MARKED COMPLETE:
-${missing.length?missing.join('\n'):'None'}
+${missing.length ? missing.join('\n') : 'None'}
 
 STATEMENT NOTES:
-${value('statementNotes')||'None'}
+${value('statementNotes') || 'None'}
 
 FOLLOW-UP NOTES:
-${value('notes')||'None'}
+${value('notes') || 'None'}
 
 REMINDER:
 This checklist is a process aid only. Verify current law, policy, forms, court routing, supervisor guidance, and DV detective guidance.`;
-  const out=document.getElementById('summaryOutput');
-  out.textContent=summary;out.style.display='block';
-  return summary;
+
+    const output = document.getElementById('summaryOutput');
+    if (output) {
+      output.textContent = summary;
+      output.style.display = 'block';
+      output.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    return summary;
+  } catch (error) {
+    alert('Summary could not be generated. Error: ' + error.message);
+    return '';
+  }
 }
-function emailSummary(){
-  const w=validationWarnings();
-  if(w.length && !confirm(`There are ${w.length} validation warning(s). Continue and include them in the email?`)) return;
-  const summary=generateSummary();
-  const to=value('email');
-  location.href=`mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent('DV Checklist Summary - '+(value('caseNumber')||'Case Number Needed'))}&body=${encodeURIComponent(summary)}`;
+function emailSummary() {
+  const summary = generateSummary();
+  if (!summary) return;
+
+  const warnings = validationWarnings();
+  const route = getRouting();
+
+  if (warnings.length && !confirm(`There are ${warnings.length} validation warning(s). Continue and open email anyway?`)) {
+    return;
+  }
+
+  /*
+    Important:
+    Mobile mail apps often fail when a mailto link has a long body.
+    This email uses a shorter body and tells the officer to paste the copied full summary.
+  */
+  const shortBody =
+`DV Checklist Summary
+
+Case Number: ${value('caseNumber') || 'Not entered'}
+Officer/User: ${value('officer') || 'Not entered'}
+Precinct: ${value('precinct') || 'Not selected'}
+Offense Level: ${value('offenseLevel') || 'Not selected'}
+
+Court / Submission: ${route.court}
+Citation: ${route.citation}
+EProsecutor: ${route.eprosecutor}
+
+Validation Warnings:
+${warnings.length ? warnings.map(w => '⚠ ' + w).join('\n') : 'None'}
+
+Full checklist summary was generated in the app. Paste the full copied summary below if needed.
+
+`;
+
+  const to = value('email');
+  const subject = 'DV Checklist Summary - ' + (value('caseNumber') || 'Case Number Needed');
+
+  const mailto = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(shortBody)}`;
+
+  // Copy full summary first as a backup.
+  try {
+    const temp = document.createElement('textarea');
+    temp.value = summary;
+    document.body.appendChild(temp);
+    temp.select();
+    temp.setSelectionRange(0, 999999);
+    document.execCommand('copy');
+    document.body.removeChild(temp);
+  } catch (error) {}
+
+  window.location.href = mailto;
+
+  setTimeout(function () {
+    alert('If your email app did not open, use Copy Summary and paste it into an email manually. Some phones block long or local-file email links.');
+  }, 900);
 }
-async function copySummary(){
-  const w=validationWarnings();
-  if(w.length && !confirm(`There are ${w.length} validation warning(s). Continue and copy anyway?`)) return;
-  const summary=generateSummary();
-  try{await navigator.clipboard.writeText(summary);alert('Summary copied.')}catch(e){alert('Copy failed. Highlight and copy manually.')}
+async async function copySummary() {
+  const summary = generateSummary();
+  if (!summary) return;
+
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(summary);
+      alert('Summary copied.');
+      return;
+    }
+  } catch (error) {}
+
+  // Fallback for phones, local files, and non-HTTPS pages.
+  const temp = document.createElement('textarea');
+  temp.value = summary;
+  temp.setAttribute('readonly', '');
+  temp.style.position = 'fixed';
+  temp.style.top = '-1000px';
+  document.body.appendChild(temp);
+  temp.select();
+  temp.setSelectionRange(0, 999999);
+
+  try {
+    document.execCommand('copy');
+    alert('Summary copied.');
+  } catch (error) {
+    alert('Copy failed. The summary is displayed on screen. Select and copy it manually.');
+  }
+
+  document.body.removeChild(temp);
 }
 function clearForm(){
   if(!confirm('Clear all form data from this page?')) return;
