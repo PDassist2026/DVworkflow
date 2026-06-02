@@ -70,10 +70,10 @@
   </div>
 
   <div class="tabs">
-    <button class="tabbtn active" onclick="showTab('qual')">1. DV Qualification</button>
-    <button class="tabbtn" onclick="showTab('invest')">2. Investigation</button>
-    <button class="tabbtn" onclick="showTab('lap')">3. LAP / Strangulation</button>
-    <button class="tabbtn" onclick="showTab('court')">4. Enforcement / Court</button>
+    <button class="tabbtn active" onclick="showTab(event, 'qual')">1. DV Qualification</button>
+    <button class="tabbtn" onclick="showTab(event, 'invest')">2. Investigation</button>
+    <button class="tabbtn" onclick="showTab(event, 'lap')">3. LAP / Strangulation</button>
+    <button class="tabbtn" onclick="showTab(event, 'court')">4. Enforcement / Court</button>
     <button class="tabbtn" onclick="showTab(event, 'resources')">5. Resources</button>
     <button class="tabbtn" onclick="showTab(event, 'review')">6. Final Review</button>
   </div>
@@ -310,31 +310,16 @@
     </div>
   </section>
 
-  
   <section id="resources" class="tab">
     <div class="tab-title blue">Quick Links / Resources</div>
     <div class="content">
-      <div class="notice">
-        <strong>Reference Links:</strong>
-        These links are shortcuts only. Confirm you are using the correct current form before submission.
-      </div>
-
       <a class="resource-link" target="_blank" rel="noopener noreferrer" href="https://app.smartsheet.com/b/form/496bef27ca3b4a689bd1f75bbd2a509c">
         Open Millcreek DV Smartsheet
       </a>
 
-      <div class="disabled-link">
-        Holladay DV Smartsheet — add link when confirmed
-      </div>
-
-      <div class="card">
-        <strong>Suggested Future Links</strong>
-        <div class="listline">• Current DV worksheet / LAP form</div>
-        <div class="listline">• No Contact Agreement / JRA form</div>
-        <div class="listline">• Strangulation form</div>
-        <div class="listline">• Medical release form</div>
-        <div class="listline">• Current DV detective guidance</div>
-      </div>
+      <a class="resource-link" target="_blank" rel="noopener noreferrer" href="https://app.smartsheet.com/b/publish?EQBCT=f39ca08be59e46cea8e53b16143be465">
+        Open Holladay DV Smartsheet
+      </a>
     </div>
   </section>
 
@@ -363,7 +348,7 @@
 
   <section class="tab active" style="display:block;background:white;border:1px solid var(--border);border-radius:14px;margin-top:12px;">
     <div class="content" style="font-size:.85rem;color:#475569;">
-      <strong>App Version:</strong> 1.1 &nbsp; | &nbsp;
+      <strong>App Version:</strong> 1.3 | &nbsp;
       <strong>Last Updated:</strong> June 2026 &nbsp; | &nbsp;
       <strong>Supported Precincts:</strong> Millcreek / Holladay only &nbsp; | &nbsp;
       <strong>Use:</strong> Generic field checklist and routing assistant. Not affiliated with or endorsed by any agency.
@@ -380,12 +365,26 @@
 </div>
 
 <script>
-function showTab(id){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tabbtn').forEach(b=>b.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  event.target.classList.add('active');
-}
+function showTab(event, id) {
+    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tabbtn').forEach(button => button.classList.remove('active'));
+
+    const tab = document.getElementById(id);
+    if (tab) {
+      tab.classList.add('active');
+    }
+
+    if (event && event.target) {
+      event.target.classList.add('active');
+    } else {
+      const buttons = document.querySelectorAll('.tabbtn');
+      buttons.forEach(button => {
+        if (button.getAttribute('onclick') && button.getAttribute('onclick').includes("'" + id + "'")) {
+          button.classList.add('active');
+        }
+      });
+    }
+  }
 function value(id){const el=document.getElementById(id);return el?el.value.trim():''}
 function allChecks(){return Array.from(document.querySelectorAll('input[type="checkbox"][data-item]'))}
 function isChecked(label){return allChecks().some(c=>c.dataset.item===label && c.checked)}
@@ -477,6 +476,68 @@ function validationWarnings(){
   return w;
 }
 
+
+  function calculateProgress() {
+    /*
+      Progress now counts:
+      1. Checked checklist boxes.
+      2. Answered decision fields, including "No", "Not Needed", "None known", etc.
+      This prevents valid negative answers from lowering the completion score.
+    */
+    const checks = allChecks();
+    let total = checks.length;
+    let done = checks.filter(check => check.checked).length;
+
+    const answeredFields = [
+      'caseNumber',
+      'officer',
+      'precinct',
+      'qualCrime',
+      'relationship',
+      'pc',
+      'childrenPresent',
+      'pregnant',
+      'orderStatus',
+      'injury',
+      'propertyDamage',
+      'victimStatement',
+      'witnessStatement',
+      'intimatePartner',
+      'advocateResult',
+      'lap14',
+      'lap511',
+      'strangulation',
+      'victimMedical',
+      'suspectMedical',
+      'offenseLevel',
+      'enforcement'
+    ];
+
+    answeredFields.forEach(id => {
+      const element = document.getElementById(id);
+      if (!element) return;
+
+      total += 1;
+
+      if (element.value && element.value.trim() !== '') {
+        done += 1;
+      }
+    });
+
+    /*
+      Conditional tasks are only counted if they apply.
+      If the officer selects "No", those hidden tasks are not counted against progress.
+    */
+    if (value('injury') === 'Yes') {
+      ['Injury photos taken', 'Overall body/person photos taken', 'Area of claimed injury photographed even if no visible injury'].forEach(label => {
+        if (!checks.some(check => check.dataset.item === label)) return;
+      });
+    }
+
+    const percent = total ? Math.round(done / total * 100) : 0;
+    return { total, done, percent };
+  }
+
 function updateAll(){
   const res=document.getElementById('dvResult');
   const dv=dvApplies();
@@ -505,7 +566,8 @@ function updateAll(){
   const checks=allChecks(), done=checks.filter(c=>c.checked).length, pct=checks.length?Math.round(done/checks.length*100):0;
   document.getElementById('barFill').style.width=pct+'%';
   document.getElementById('progressText').textContent=`Checklist completion: ${pct}% (${done}/${checks.length})`;
-  renderReview(false);
+  updateSmartSheetShortcut();
+    renderReview(false);
 }
 
 function renderReview(show=true){
