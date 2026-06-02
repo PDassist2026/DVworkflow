@@ -131,6 +131,10 @@
       color: white;
     }
 
+    .mode-toggle button:active {
+      transform: scale(.98);
+    }
+
     body.night {
       background: #020617;
       color: #e2e8f0;
@@ -228,8 +232,8 @@
   <p>Millcreek / Holladay field checklist and court-routing workflow — no database, no cloud storage. Email/copy only.</p>
 
   <div class="mode-toggle">
-    <button type="button" onclick="setMode('day')">Day Mode</button>
-    <button type="button" onclick="setMode('night')">Night Mode</button>
+    <button type="button" id="dayModeBtn">Day Mode</button>
+    <button type="button" id="nightModeBtn">Night Mode</button>
   </div>
 </header>
 
@@ -525,7 +529,7 @@
 
   <section class="tab active" style="display:block;background:white;border:1px solid var(--border);border-radius:14px;margin-top:12px;">
     <div class="content" style="font-size:.85rem;color:#475569;">
-      <strong>App Version:</strong> 1.4 | &nbsp;
+      <strong>App Version:</strong> 1.5 | &nbsp;
       <strong>Last Updated:</strong> June 2026 &nbsp; | &nbsp;
       <strong>Supported Precincts:</strong> Millcreek / Holladay only &nbsp; | &nbsp;
       <strong>Use:</strong> Generic field checklist and routing assistant. Not affiliated with or endorsed by any agency.
@@ -757,26 +761,9 @@ function renderReview(show=true){
 }
 
 function generateSummary(){
-
-  function setMode(mode) {
-    if (mode === 'night') {
-      document.body.classList.add('night');
-      localStorage.setItem('dvAssistantMode', 'night');
-    } else {
-      document.body.classList.remove('night');
-      localStorage.setItem('dvAssistantMode', 'day');
-    }
-  }
-
-  function loadMode() {
-    const saved = localStorage.getItem('dvAssistantMode');
-    if (saved === 'night') {
-      document.body.classList.add('night');
-    }
-  }
+}
 
 
-  loadMode();
   updateAll();
   const r=getRouting(), w=validationWarnings(), forms=requiredForms();
   const completed=allChecks().filter(c=>c.checked).map(c=>'✓ '+c.dataset.item);
@@ -856,7 +843,49 @@ function clearForm(){
   document.getElementById('summaryOutput').style.display='none';
   updateAll();
 }
-updateAll();
+
+  function applyDisplayMode(mode) {
+    if (mode === 'night') {
+      document.body.classList.add('night');
+      try { localStorage.setItem('dvAssistantMode', 'night'); } catch (e) {}
+    } else {
+      document.body.classList.remove('night');
+      try { localStorage.setItem('dvAssistantMode', 'day'); } catch (e) {}
+    }
+  }
+
+  function initializeDisplayMode() {
+    let savedMode = 'day';
+
+    try {
+      savedMode = localStorage.getItem('dvAssistantMode') || 'day';
+    } catch (e) {
+      savedMode = 'day';
+    }
+
+    applyDisplayMode(savedMode);
+
+    const dayButton = document.getElementById('dayModeBtn');
+    const nightButton = document.getElementById('nightModeBtn');
+
+    if (dayButton) {
+      dayButton.addEventListener('click', function () {
+        applyDisplayMode('day');
+      });
+    }
+
+    if (nightButton) {
+      nightButton.addEventListener('click', function () {
+        applyDisplayMode('night');
+      });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    initializeDisplayMode();
+    updateAll();
+  });
+
 </script>
 </body>
 </html>
